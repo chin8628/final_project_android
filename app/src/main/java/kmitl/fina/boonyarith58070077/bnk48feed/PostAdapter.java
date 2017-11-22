@@ -17,9 +17,11 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import java.lang.reflect.Array;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
@@ -32,6 +34,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
 
     private Activity activity;
     private List<FacebookData> facebookDataList;
+    private final List<String> type_filter = new ArrayList<String>(Arrays.asList("photo", "video_inline"));
 
     public PostAdapter(Activity activity) {
         this.activity = activity;
@@ -52,8 +55,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
 
     @Override
     public void onBindViewHolder(Holder holder, final int position) {
-        if (facebookDataList.get(position).getAttachments() != null &&
-                "photo".equals(facebookDataList.get(position).getAttachments().getData().get(0).getType())) {
+        String type = facebookDataList.get(position).getAttachments().getData().get(0).getType();
+
+        if (facebookDataList.get(position).getAttachments() != null && type_filter.contains(type)) {
             String imageUrl = facebookDataList.get(position).getAttachments().getData().get(0).getMedia().getImage().getSrc();
             String profileImageUrl = facebookDataList.get(position).getFacebookProfile().getPhotos().getData().get(0).getPicture();
 
@@ -98,6 +102,15 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
                     openOnBrowser(facebookDataList.get(position).getPermalinkUrl());
                 }
             });
+
+            switch (type_filter.indexOf(type)) {
+                case 0:
+                    holder.tag.setText("Photo");
+                    break;
+                case 1:
+                    holder.tag.setText("Video");
+                    break;
+            }
         }
     }
 
@@ -122,6 +135,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
         ImageButton share;
         @BindView(R.id.browserBtn)
         ImageButton browser;
+        @BindView(R.id.tag_content)
+        TextView tag;
 
         public Holder(View itemView) {
             super(itemView);
