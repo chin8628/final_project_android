@@ -11,6 +11,7 @@ public class Member {
             "mobile", "music", "pun", "piam", "satchan", "jib", "korn", "kaimook", "izutarina"
     };
     private List<String> memberAlreadyGetData = new ArrayList<String>();
+    private List<String> memberFilter = new ArrayList<String>();
     private Member.memberListener memberListener;
 
     public interface memberListener {
@@ -34,7 +35,22 @@ public class Member {
     }
 
     private boolean isAllMemberWasSearch() {
+        if (!this.memberFilter.isEmpty()) {
+            return this.memberFilter.size() == this.memberAlreadyGetData.size();
+        }
         return this.memberAlreadyGetData.size() == Member.member.length;
+    }
+
+    public void addMemberFilter(String name) {
+        this.memberFilter.add(name);
+    }
+
+    public boolean isMemberFilterIsEmpty() {
+        return this.memberFilter.isEmpty();
+    }
+
+    public void clearMemberAlreadyGetData() {
+        this.memberAlreadyGetData = new ArrayList<String>();
     }
 
 }

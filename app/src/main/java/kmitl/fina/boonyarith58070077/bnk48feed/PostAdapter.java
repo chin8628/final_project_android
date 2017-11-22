@@ -26,10 +26,7 @@ import java.util.TimeZone;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
-import butterknife.OnItemClick;
 import kmitl.fina.boonyarith58070077.bnk48feed.model.facebook.FacebookData;
-import kmitl.fina.boonyarith58070077.bnk48feed.model.facebook.Image;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
 

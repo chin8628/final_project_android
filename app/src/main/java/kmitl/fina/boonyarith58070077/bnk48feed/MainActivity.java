@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        member.clearMemberAlreadyGetData();
         for (String member: Member.getMember()) {
             getFeed(member);
         }
@@ -87,7 +88,8 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_camera) {
-            getFeed("cherprang");
+            member.clearMemberAlreadyGetData();
+            getFeed("cherprang", true);
         } else if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_slideshow) {
@@ -106,6 +108,18 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void getFeed(final String name) {
+        callApi(name);
+    }
+
+    private void getFeed(final String name, boolean clear) {
+        // if `clear` is true then clear all data in FacebookDataList
+
+        member.addMemberFilter(name);
+        displayModel.clearData();
+        callApi(name);
+    }
+
+    private void callApi(final String name) {
         OkHttpClient client = new OkHttpClient.Builder().build();
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(FacebookApi.BASE)
@@ -131,7 +145,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void display() {
-
         RecyclerView list = findViewById(R.id.recyclerView);
         list.setLayoutManager(new LinearLayoutManager(this));
         PostAdapter adapter = new PostAdapter(this);

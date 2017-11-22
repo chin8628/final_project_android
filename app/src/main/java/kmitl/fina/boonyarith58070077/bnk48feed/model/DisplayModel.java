@@ -25,6 +25,10 @@ public class DisplayModel {
         return facebookDataList;
     }
 
+    public void clearData() {
+        this.facebookDataList = null;
+    }
+
     public void setFacebookDataList(FacebookModel facebookModel) {
         FacebookProfile facebookProfile = new FacebookProfile();
         facebookProfile.setId(facebookModel.getId());
