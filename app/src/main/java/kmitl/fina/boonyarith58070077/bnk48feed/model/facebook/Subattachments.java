@@ -9,13 +9,13 @@ public class Subattachments {
 
     @SerializedName("data")
     @Expose
-    private List<Datum__> data = null;
+    private List<SubattachmentData> data = null;
 
-    public List<Datum__> getData() {
+    public List<SubattachmentData> getData() {
         return data;
     }
 
-    public void setData(List<Datum__> data) {
+    public void setData(List<SubattachmentData> data) {
         this.data = data;
     }
 

@@ -6,18 +6,15 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
-import java.lang.reflect.Array;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -29,12 +26,17 @@ import java.util.TimeZone;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import kmitl.fina.boonyarith58070077.bnk48feed.model.facebook.FacebookData;
+import kmitl.fina.boonyarith58070077.bnk48feed.model.facebook.SubattachmentData;
+import kmitl.fina.boonyarith58070077.bnk48feed.model.facebook.Subattachments;
+import ss.com.bannerslider.banners.Banner;
+import ss.com.bannerslider.banners.RemoteBanner;
+import ss.com.bannerslider.views.BannerSlider;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
 
     private Activity activity;
     private List<FacebookData> facebookDataList;
-    private final List<String> type_filter = new ArrayList<String>(Arrays.asList("photo", "video_inline"));
+    private final List<String> type_filter = new ArrayList<String>(Arrays.asList("photo", "video_inline", "album"));
 
     public PostAdapter(Activity activity) {
         this.activity = activity;
@@ -58,15 +60,40 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
         String type = facebookDataList.get(position).getAttachments().getData().get(0).getType();
 
         if (facebookDataList.get(position).getAttachments() != null && type_filter.contains(type)) {
-            String imageUrl = facebookDataList.get(position).getAttachments().getData().get(0).getMedia().getImage().getSrc();
             String profileImageUrl = facebookDataList.get(position).getFacebookProfile().getPhotos().getData().get(0).getPicture();
+            String time_string = facebookDataList.get(position).getCreatedTime();
+
+            BannerSlider bannerSlider = holder.imageView;
+            List<Banner> banners = new ArrayList<>();
+
+            if (type_filter.indexOf(type) == 2) {
+                Subattachments subattachments = facebookDataList.get(position).getAttachments().getData().get(0).getSubattachments();
+                for(SubattachmentData subattachmentData: subattachments.getData()) {
+                    String image_url = subattachmentData.getMedia().getImage().getSrc();
+                    banners.add(new RemoteBanner(image_url));
+                }
+            } else {
+                String image_url = facebookDataList.get(position).getAttachments().getData().get(0).getMedia().getImage().getSrc();
+                banners.add(new RemoteBanner(image_url));
+            }
+
+            bannerSlider.setBanners(banners);
 
             holder.name.setText(facebookDataList.get(position).getFacebookProfile().getName());
             Glide.with(activity).load(profileImageUrl).into(holder.profileImage);
             holder.message.setText(facebookDataList.get(position).getMessage());
-            Glide.with(activity).load(imageUrl).into(holder.imageView);
 
-            String time_string = facebookDataList.get(position).getCreatedTime();
+            switch (type_filter.indexOf(type)) {
+                case 0:
+                    holder.tag.setText("Photo");
+                    break;
+                case 1:
+                    holder.tag.setText("Video");
+                    break;
+                case 2:
+                    holder.tag.setText("Album");
+                    break;
+            }
 
             @SuppressLint("SimpleDateFormat")
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
@@ -79,14 +106,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
                 e.printStackTrace();
             }
 
-            String timeago = (String) DateUtils.getRelativeDateTimeString(
-                    BNK48Feed.getAppContext(),
-                    time.getTime(),
-                    5000,
-                    DateUtils.WEEK_IN_MILLIS,
-                    1
-            );
-
+            String timeago = (String) DateUtils.getRelativeDateTimeString(BNK48Feed.getAppContext(), time.getTime(),5000, DateUtils.WEEK_IN_MILLIS,1);
             holder.time.setText(timeago);
 
             holder.share.setOnClickListener(new View.OnClickListener() {
@@ -102,15 +122,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
                     openOnBrowser(facebookDataList.get(position).getPermalinkUrl());
                 }
             });
-
-            switch (type_filter.indexOf(type)) {
-                case 0:
-                    holder.tag.setText("Photo");
-                    break;
-                case 1:
-                    holder.tag.setText("Video");
-                    break;
-            }
         }
     }
 
@@ -122,7 +133,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
     static class Holder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.imageView)
-        ImageView imageView;
+        BannerSlider imageView;
         @BindView(R.id.profile_image)
         ImageView profileImage;
         @BindView(R.id.profile_name)
