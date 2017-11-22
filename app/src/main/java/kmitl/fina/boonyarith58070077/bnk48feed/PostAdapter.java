@@ -2,11 +2,15 @@ package kmitl.fina.boonyarith58070077.bnk48feed;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -19,6 +23,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.OnItemClick;
 import kmitl.fina.boonyarith58070077.bnk48feed.model.facebook.FacebookData;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
@@ -44,7 +52,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
     }
 
     @Override
-    public void onBindViewHolder(Holder holder, int position) {
+    public void onBindViewHolder(Holder holder, final int position) {
         if (facebookDataList.get(position).getAttachments() != null &&
                 "photo".equals(facebookDataList.get(position).getAttachments().getData().get(0).getType())) {
             String imageUrl = facebookDataList.get(position).getAttachments().getData().get(0).getMedia().getImage().getSrc();
@@ -77,6 +85,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
             );
 
             holder.time.setText(timeago);
+
+            holder.share.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    shareUrl(facebookDataList.get(position).getPermalinkUrl());
+                }
+            });
         }
     }
 
@@ -86,20 +101,33 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
     }
 
     static class Holder extends RecyclerView.ViewHolder {
+
+        @BindView(R.id.imageView)
         ImageView imageView;
+        @BindView(R.id.profile_image)
         ImageView profileImage;
+        @BindView(R.id.profile_name)
         TextView name;
+        @BindView(R.id.message)
         TextView message;
+        @BindView(R.id.time)
         TextView time;
+        @BindView(R.id.shareBtn)
+        ImageButton share;
 
         public Holder(View itemView) {
             super(itemView);
-
-            name = itemView.findViewById(R.id.profile_name);
-            profileImage = itemView.findViewById(R.id.profile_image);
-            imageView = itemView.findViewById(R.id.imageView);
-            message = itemView.findViewById(R.id.message);
-            time = itemView.findViewById(R.id.time);
+            ButterKnife.bind(this, itemView);
         }
+    }
+
+    private void shareUrl(String url) {
+        Intent share = new Intent(android.content.Intent.ACTION_SEND);
+        share.setType("text/plain");
+        share.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+
+        share.putExtra(Intent.EXTRA_TEXT, url);
+
+        activity.startActivity(Intent.createChooser(share, "Share!"));
     }
 }

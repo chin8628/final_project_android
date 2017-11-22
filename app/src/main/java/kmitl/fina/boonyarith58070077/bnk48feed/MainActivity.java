@@ -13,9 +13,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import kmitl.fina.boonyarith58070077.bnk48feed.api.FacebookApi;
 import kmitl.fina.boonyarith58070077.bnk48feed.model.DisplayModel;
 import kmitl.fina.boonyarith58070077.bnk48feed.model.facebook.FacebookModel;
