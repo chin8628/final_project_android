@@ -1,11 +1,14 @@
 
-package kmitl.fina.boonyarith58070077.bnk48feed.model.facebook.feed;
+package kmitl.fina.boonyarith58070077.bnk48feed.model.facebook;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class Datum_ {
 
+    @SerializedName("media")
+    @Expose
+    private Media media;
     @SerializedName("type")
     @Expose
     private String type;
@@ -15,9 +18,14 @@ public class Datum_ {
     @SerializedName("subattachments")
     @Expose
     private Subattachments subattachments;
-    @SerializedName("media")
-    @Expose
-    private Media_ media;
+
+    public Media getMedia() {
+        return media;
+    }
+
+    public void setMedia(Media media) {
+        this.media = media;
+    }
 
     public String getType() {
         return type;
@@ -41,14 +49,6 @@ public class Datum_ {
 
     public void setSubattachments(Subattachments subattachments) {
         this.subattachments = subattachments;
-    }
-
-    public Media_ getMedia() {
-        return media;
-    }
-
-    public void setMedia(Media_ media) {
-        this.media = media;
     }
 
 }

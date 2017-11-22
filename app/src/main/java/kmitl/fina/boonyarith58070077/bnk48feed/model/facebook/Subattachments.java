@@ -1,5 +1,5 @@
 
-package kmitl.fina.boonyarith58070077.bnk48feed.model.facebook.feed;
+package kmitl.fina.boonyarith58070077.bnk48feed.model.facebook;
 
 import java.util.List;
 import com.google.gson.annotations.Expose;

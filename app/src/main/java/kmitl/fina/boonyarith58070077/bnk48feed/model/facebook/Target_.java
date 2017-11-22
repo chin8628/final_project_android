@@ -1,24 +1,24 @@
 
-package kmitl.fina.boonyarith58070077.bnk48feed.model.facebook.profile;
+package kmitl.fina.boonyarith58070077.bnk48feed.model.facebook;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class FacebookProfileData {
+public class Target_ {
 
-    @SerializedName("picture")
+    @SerializedName("url")
     @Expose
-    private String picture;
+    private String url;
     @SerializedName("id")
     @Expose
     private String id;
 
-    public String getPicture() {
-        return picture;
+    public String getUrl() {
+        return url;
     }
 
-    public void setPicture(String picture) {
-        this.picture = picture;
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public String getId() {

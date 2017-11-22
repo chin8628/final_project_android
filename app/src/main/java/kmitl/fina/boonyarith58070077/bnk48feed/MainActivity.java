@@ -1,12 +1,9 @@
 package kmitl.fina.boonyarith58070077.bnk48feed;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -16,18 +13,22 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import kmitl.fina.boonyarith58070077.bnk48feed.api.FacebookApi;
-import kmitl.fina.boonyarith58070077.bnk48feed.model.facebook.DisplayModel;
-import kmitl.fina.boonyarith58070077.bnk48feed.model.facebook.feed.FacebookModel;
-import kmitl.fina.boonyarith58070077.bnk48feed.model.facebook.profile.FacebookProfileModel;
+import kmitl.fina.boonyarith58070077.bnk48feed.model.DisplayModel;
+import kmitl.fina.boonyarith58070077.bnk48feed.model.facebook.FacebookModel;
+import kmitl.fina.boonyarith58070077.bnk48feed.model.member.Member;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, DisplayModel.displayModelListener {
+        implements NavigationView.OnNavigationItemSelectedListener, Member.memberListener {
 
-    private final DisplayModel displayModel = new DisplayModel(this);
+    private final DisplayModel displayModel = new DisplayModel();
+    private final Member member = new Member(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,15 +36,6 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -53,6 +45,10 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        for (String member: Member.getMember()) {
+            getFeed(member);
+        }
     }
 
     @Override
@@ -95,7 +91,6 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_camera) {
             getFeed("cherprang");
-            getUserProfile("cherprang");
         } else if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_slideshow) {
@@ -113,7 +108,7 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private void getFeed(String name) {
+    private void getFeed(final String name) {
         OkHttpClient client = new OkHttpClient.Builder().build();
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(FacebookApi.BASE)
@@ -125,36 +120,15 @@ public class MainActivity extends AppCompatActivity
         api.getFeed(name).enqueue(new retrofit2.Callback<FacebookModel>() {
             @Override
             public void onResponse(retrofit2.Call<FacebookModel> call, retrofit2.Response<FacebookModel> response) {
-                Log.d("Response", "onResponse: " + response.body());
-                displayModel.setFacebookFeedData(response.body().getData());
+                Log.d("Response", "onResponse: " + name);
+                displayModel.setFacebookDataList(response.body());
+                member.addAlreadyGotMember(name);
             }
 
             @Override
             public void onFailure(retrofit2.Call<FacebookModel> call, Throwable t) {
-                Log.d("Response", "onFailure");
-            }
-        });
-    }
-
-    private void getUserProfile(String name) {
-        OkHttpClient client = new OkHttpClient.Builder().build();
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(FacebookApi.BASE)
-                .client(client)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        FacebookApi api = retrofit.create(FacebookApi.class);
-        api.getProfile(name).enqueue(new retrofit2.Callback<FacebookProfileModel>() {
-            @Override
-            public void onResponse(retrofit2.Call<FacebookProfileModel> call, retrofit2.Response<FacebookProfileModel> response) {
-                Log.d("Response", "onResponse: " + response.body());
-                displayModel.setFacebookProfileModel(response.body());
-            }
-
-            @Override
-            public void onFailure(retrofit2.Call<FacebookProfileModel> call, Throwable t) {
-                Log.d("Response", "onFailure");
+                Log.d("Response", "onFailure " + name);
+                member.addAlreadyGotMember(name);
             }
         });
     }
@@ -162,16 +136,15 @@ public class MainActivity extends AppCompatActivity
     private void display() {
 
         RecyclerView list = findViewById(R.id.recyclerView);
-
         list.setLayoutManager(new LinearLayoutManager(this));
-
         PostAdapter adapter = new PostAdapter(this);
-        adapter.setData(this.displayModel.getFacebookFeedData(), this.displayModel.getFacebookProfileModel());
+        adapter.setData(this.displayModel.getFacebookDataList());
         list.setAdapter(adapter);
     }
 
     @Override
-    public void onReady() {
+    public void onAllMemberWasSearched() {
+        this.displayModel.sortByTime();
         display();
     }
 }

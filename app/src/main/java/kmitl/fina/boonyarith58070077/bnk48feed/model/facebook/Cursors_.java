@@ -1,25 +1,17 @@
 
-package kmitl.fina.boonyarith58070077.bnk48feed.model.facebook.feed;
+package kmitl.fina.boonyarith58070077.bnk48feed.model.facebook;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Cursors {
+public class Cursors_ {
 
-    @SerializedName("before")
-    @Expose
-    private String before;
     @SerializedName("after")
     @Expose
     private String after;
-
-    public String getBefore() {
-        return before;
-    }
-
-    public void setBefore(String before) {
-        this.before = before;
-    }
+    @SerializedName("before")
+    @Expose
+    private String before;
 
     public String getAfter() {
         return after;
@@ -27,6 +19,14 @@ public class Cursors {
 
     public void setAfter(String after) {
         this.after = after;
+    }
+
+    public String getBefore() {
+        return before;
+    }
+
+    public void setBefore(String before) {
+        this.before = before;
     }
 
 }

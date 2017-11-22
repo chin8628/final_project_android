@@ -1,28 +1,20 @@
 
-package kmitl.fina.boonyarith58070077.bnk48feed.model.facebook.feed;
+package kmitl.fina.boonyarith58070077.bnk48feed.model.facebook;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class Image {
 
-    @SerializedName("height")
-    @Expose
-    private Integer height;
     @SerializedName("src")
     @Expose
     private String src;
     @SerializedName("width")
     @Expose
     private Integer width;
-
-    public Integer getHeight() {
-        return height;
-    }
-
-    public void setHeight(Integer height) {
-        this.height = height;
-    }
+    @SerializedName("height")
+    @Expose
+    private Integer height;
 
     public String getSrc() {
         return src;
@@ -38,6 +30,14 @@ public class Image {
 
     public void setWidth(Integer width) {
         this.width = width;
+    }
+
+    public Integer getHeight() {
+        return height;
+    }
+
+    public void setHeight(Integer height) {
+        this.height = height;
     }
 
 }

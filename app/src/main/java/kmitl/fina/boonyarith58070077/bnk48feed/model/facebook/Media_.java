@@ -1,20 +1,20 @@
 
-package kmitl.fina.boonyarith58070077.bnk48feed.model.facebook.feed;
+package kmitl.fina.boonyarith58070077.bnk48feed.model.facebook;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Media {
+public class Media_ {
 
     @SerializedName("image")
     @Expose
-    private Image image;
+    private Image_ image;
 
-    public Image getImage() {
+    public Image_ getImage() {
         return image;
     }
 
-    public void setImage(Image image) {
+    public void setImage(Image_ image) {
         this.image = image;
     }
 
