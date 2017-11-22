@@ -3,7 +3,7 @@ package kmitl.fina.boonyarith58070077.bnk48feed.model.facebook.feed;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-public class Datum {
+public class FacebookFeedData {
 
     @SerializedName("created_time")
     @Expose

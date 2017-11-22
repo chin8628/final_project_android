@@ -4,7 +4,7 @@ package kmitl.fina.boonyarith58070077.bnk48feed.model.facebook.profile;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Datum {
+public class FacebookProfileData {
 
     @SerializedName("picture")
     @Expose

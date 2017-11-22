@@ -17,13 +17,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import kmitl.fina.boonyarith58070077.bnk48feed.api.FacebookApi;
+import kmitl.fina.boonyarith58070077.bnk48feed.model.facebook.DisplayModel;
 import kmitl.fina.boonyarith58070077.bnk48feed.model.facebook.feed.FacebookModel;
+import kmitl.fina.boonyarith58070077.bnk48feed.model.facebook.profile.FacebookProfileModel;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, DisplayModel.displayModelListener {
+
+    private final DisplayModel displayModel = new DisplayModel(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +94,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_camera) {
+            getFeed("cherprang");
             getUserProfile("cherprang");
         } else if (id == R.id.nav_gallery) {
 
@@ -108,7 +113,7 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private void getUserProfile(String name) {
+    private void getFeed(String name) {
         OkHttpClient client = new OkHttpClient.Builder().build();
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(FacebookApi.BASE)
@@ -121,7 +126,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onResponse(retrofit2.Call<FacebookModel> call, retrofit2.Response<FacebookModel> response) {
                 Log.d("Response", "onResponse: " + response.body());
-                display(response.body());
+                displayModel.setFacebookFeedData(response.body().getData());
             }
 
             @Override
@@ -131,14 +136,42 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    private void display(FacebookModel facebookModel) {
+    private void getUserProfile(String name) {
+        OkHttpClient client = new OkHttpClient.Builder().build();
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(FacebookApi.BASE)
+                .client(client)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        FacebookApi api = retrofit.create(FacebookApi.class);
+        api.getProfile(name).enqueue(new retrofit2.Callback<FacebookProfileModel>() {
+            @Override
+            public void onResponse(retrofit2.Call<FacebookProfileModel> call, retrofit2.Response<FacebookProfileModel> response) {
+                Log.d("Response", "onResponse: " + response.body());
+                displayModel.setFacebookProfileModel(response.body());
+            }
+
+            @Override
+            public void onFailure(retrofit2.Call<FacebookProfileModel> call, Throwable t) {
+                Log.d("Response", "onFailure");
+            }
+        });
+    }
+
+    private void display() {
 
         RecyclerView list = findViewById(R.id.recyclerView);
 
         list.setLayoutManager(new LinearLayoutManager(this));
 
         PostAdapter adapter = new PostAdapter(this);
-        adapter.setData(facebookModel.getData());
+        adapter.setData(this.displayModel.getFacebookFeedData(), this.displayModel.getFacebookProfileModel());
         list.setAdapter(adapter);
+    }
+
+    @Override
+    public void onReady() {
+        display();
     }
 }

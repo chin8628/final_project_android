@@ -9,16 +9,16 @@ public class FacebookModel {
 
     @SerializedName("data")
     @Expose
-    private List<Datum> data = null;
+    private List<FacebookFeedData> data = null;
     @SerializedName("paging")
     @Expose
     private Paging paging;
 
-    public List<Datum> getData() {
+    public List<FacebookFeedData> getData() {
         return data;
     }
 
-    public void setData(List<Datum> data) {
+    public void setData(List<FacebookFeedData> data) {
         this.data = data;
     }
 

@@ -9,16 +9,16 @@ public class Photos {
 
     @SerializedName("data")
     @Expose
-    private List<Datum> data = null;
+    private List<FacebookProfileData> data = null;
     @SerializedName("paging")
     @Expose
     private Paging paging;
 
-    public List<Datum> getData() {
+    public List<FacebookProfileData> getData() {
         return data;
     }
 
-    public void setData(List<Datum> data) {
+    public void setData(List<FacebookProfileData> data) {
         this.data = data;
     }
 
