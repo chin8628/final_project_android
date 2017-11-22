@@ -3,6 +3,7 @@ package kmitl.fina.boonyarith58070077.bnk48feed;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.util.Log;
@@ -28,6 +29,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnItemClick;
 import kmitl.fina.boonyarith58070077.bnk48feed.model.facebook.FacebookData;
+import kmitl.fina.boonyarith58070077.bnk48feed.model.facebook.Image;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
 
@@ -92,6 +94,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
                     shareUrl(facebookDataList.get(position).getPermalinkUrl());
                 }
             });
+
+            holder.browser.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    openOnBrowser(facebookDataList.get(position).getPermalinkUrl());
+                }
+            });
         }
     }
 
@@ -114,6 +123,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
         TextView time;
         @BindView(R.id.shareBtn)
         ImageButton share;
+        @BindView(R.id.browserBtn)
+        ImageButton browser;
 
         public Holder(View itemView) {
             super(itemView);
@@ -129,5 +140,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
         share.putExtra(Intent.EXTRA_TEXT, url);
 
         activity.startActivity(Intent.createChooser(share, "Share!"));
+    }
+
+    private void openOnBrowser(String url) {
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        activity.startActivity(browserIntent);
     }
 }
