@@ -7,4 +7,7 @@
 
     <string name="action_settings">Settings</string>
     <string name="content_description">TODO</string>
+    <string name="save">Save</string>
+    <string name="filter_activity_label">Filter</string>
+    <string name="filter">Filter</string>
 </resources>

@@ -10,8 +10,8 @@ public class Member {
             "nink", "maysa", "namneung", "miori", "jaa", "kaew", "can", "mind", "orn", "namsai",
             "mobile", "music", "pun", "piam", "satchan", "jib", "korn", "kaimook", "izutarina"
     };
-    private List<String> memberAlreadyGetData = new ArrayList<String>();
-    private List<String> memberFilter = new ArrayList<String>();
+    private static List<String> memberAlreadyGetData = new ArrayList<String>();
+    private static List<String> memberFilter = new ArrayList<String>();
     private Member.memberListener memberListener;
 
     public interface memberListener {
@@ -27,7 +27,7 @@ public class Member {
     }
 
     public void addAlreadyGotMember(String member) {
-        this.memberAlreadyGetData.add(member);
+        Member.memberAlreadyGetData.add(member);
 
         if (this.isAllMemberWasSearch()) {
             this.memberListener.onAllMemberWasSearched();
@@ -35,22 +35,31 @@ public class Member {
     }
 
     private boolean isAllMemberWasSearch() {
-        if (!this.memberFilter.isEmpty()) {
-            return this.memberFilter.size() == this.memberAlreadyGetData.size();
+        if (!Member.memberFilter.isEmpty()) {
+            return Member.memberFilter.size() == Member.memberAlreadyGetData.size();
         }
-        return this.memberAlreadyGetData.size() == Member.member.length;
+        return Member.memberAlreadyGetData.size() == Member.member.length;
     }
 
-    public void addMemberFilter(String name) {
-        this.memberFilter.add(name);
+    public static void addMemberFilter(String name) {
+        if (!Member.getMemberFilter().contains(name)) {
+            Member.memberFilter.add(name);
+        }
     }
 
     public boolean isMemberFilterIsEmpty() {
-        return this.memberFilter.isEmpty();
+        return Member.memberFilter.isEmpty();
     }
 
-    public void clearMemberAlreadyGetData() {
-        this.memberAlreadyGetData = new ArrayList<String>();
+    public static void clearMemberAlreadyGetData() {
+        Member.memberAlreadyGetData = new ArrayList<String>();
     }
 
+    public static List<String> getMemberFilter() {
+        return memberFilter;
+    }
+
+    public static void clearFilter() {
+        Member.memberFilter = new ArrayList<String>();
+    }
 }

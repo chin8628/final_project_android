@@ -1,5 +1,8 @@
 package kmitl.fina.boonyarith58070077.bnk48feed;
 
+import android.app.Activity;
+import android.app.Instrumentation;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,6 +15,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.wang.avi.AVLoadingIndicatorView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import kmitl.fina.boonyarith58070077.bnk48feed.api.FacebookApi;
 import kmitl.fina.boonyarith58070077.bnk48feed.model.DisplayModel;
@@ -33,6 +41,9 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        AVLoadingIndicatorView avi = new AVLoadingIndicatorView(this);
+        avi.show();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -73,8 +84,9 @@ public class MainActivity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Intent intent = new Intent(this, FilterActivity.class);
+            startActivityForResult(intent, 1);
             return true;
         }
 
@@ -88,7 +100,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_camera) {
-            member.clearMemberAlreadyGetData();
+            Member.clearMemberAlreadyGetData();
             getFeed("cherprang", true);
         } else if (id == R.id.nav_gallery) {
 
@@ -114,9 +126,12 @@ public class MainActivity extends AppCompatActivity
     private void getFeed(final String name, boolean clear) {
         // if `clear` is true then clear all data in FacebookDataList
 
-        member.addMemberFilter(name);
+        Member.addMemberFilter(name);
         displayModel.clearData();
         callApi(name);
+
+        Log.d("www", Member.getMember().toString());
+        Log.d("www", Member.getMemberFilter().toString());
     }
 
     private void callApi(final String name) {
@@ -156,5 +171,24 @@ public class MainActivity extends AppCompatActivity
     public void onAllMemberWasSearched() {
         this.displayModel.sortByTime();
         display();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d("www", requestCode + " " + resultCode + ' ' + Activity.RESULT_OK);
+
+        if (requestCode == 1) {
+            if(resultCode == Activity.RESULT_OK){
+                Member.clearMemberAlreadyGetData();
+                List<String> members = new ArrayList<String>();
+
+                // Deep copy DIY style
+                members.addAll(Member.getMemberFilter());
+
+                for(String member: members) {
+                    getFeed(member, true);
+                }
+            }
+        }
     }
 }
