@@ -34,14 +34,15 @@ public class Api {
         api.getFeed(name).enqueue(new retrofit2.Callback<FacebookModel>() {
             @Override
             public void onResponse(@NonNull retrofit2.Call<FacebookModel> call, @NonNull retrofit2.Response<FacebookModel> response) {
-                Log.d("Response", "onResponse: " + name);;
+                Log.d("www", "onResponse: " + name);;
                 onSuccess(name, response.body());
             }
 
             @Override
             public void onFailure(@NonNull retrofit2.Call<FacebookModel> call, @NonNull Throwable t) {
-                Log.d("Response", "onFailure " + name);
+                Log.d("www", "onFailure " + name + " >> " + t.toString());
                 onFailed(name);
+                call.clone().enqueue(this);
             }
         });
     }

@@ -50,7 +50,7 @@ public class Member {
         facebookID.put("izutarina", "192097191312105");
     }
 
-    private static List<String> memberAlreadyGetData = new ArrayList<>();
+    private static Set<String> memberAlreadyGetData = new HashSet<>();
     private static Set<String> memberFilter = new HashSet<>(Arrays.asList(member));
     private Member.memberListener memberListener;
 
@@ -66,7 +66,7 @@ public class Member {
         return new ArrayList<>(Arrays.asList(Member.member));
     }
 
-    public void addAlreadyGotMember(String member) {
+    public void addAlreadyCallApiMember(String member) {
         Member.memberAlreadyGetData.add(member);
         if (Member.isAllMemberWasSearch()) {
             this.memberListener.onAllMemberWasSearched();
@@ -74,9 +74,6 @@ public class Member {
     }
 
     private static boolean isAllMemberWasSearch() {
-        if (!Member.memberFilter.isEmpty()) {
-            return Member.memberFilter.size() == Member.memberAlreadyGetData.size();
-        }
         return Member.memberAlreadyGetData.size() == Member.member.length;
     }
 
@@ -89,7 +86,7 @@ public class Member {
     }
 
     public static void clearMemberAlreadyGetData() {
-        Member.memberAlreadyGetData = new ArrayList<String>();
+        Member.memberAlreadyGetData = new HashSet<>();
     }
 
     public static List<String> getMemberFilter() {
@@ -112,7 +109,7 @@ public class Member {
         return "not found";
     }
 
-    public static void removeFilter(String name) {
+    private static void removeFilter(String name) {
         Member.memberFilter.remove(name);
     }
 
@@ -125,7 +122,9 @@ public class Member {
     }
 
     public static List<String> getMemberAlreadyGetData() {
-        return memberAlreadyGetData;
+        List<String> memberList = new ArrayList<>();
+        memberList.addAll(Member.memberAlreadyGetData);
+        return memberList;
     }
 
     public static void setMemberFilter(List<String> filter) {

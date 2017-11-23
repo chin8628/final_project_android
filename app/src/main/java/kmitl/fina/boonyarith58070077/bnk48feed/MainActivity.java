@@ -12,6 +12,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -110,8 +111,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void display() {
-        this.displayModel.sortByTime();
-
+        Log.d("www", "Display << " + this.displayModel.getFilteredFacebookDataList().toString());
         RecyclerView list = findViewById(R.id.recyclerView);
         list.setLayoutManager(new LinearLayoutManager(this));
         PostAdapter adapter = new PostAdapter(this);
@@ -124,11 +124,12 @@ public class MainActivity extends AppCompatActivity
         if (requestCode == 1) {
             if(resultCode == Activity.RESULT_OK){
                 List<String> member_filter = Member.getMemberFilter();
+                Log.d("www", "loaded: " + Member.getMemberAlreadyGetData());
 
-                for (FacebookData facebookData: this.displayModel.getFacebookDataList()) {
-                    String name_system = facebookData.getFacebookProfile().getNameSystem();
-                    if (!member_filter.contains(name_system)) {
-                        this.feed.getFeed(name_system);
+                for (String member: member_filter) {
+                    if (!Member.getMemberAlreadyGetData().contains(member)) {
+                        this.feed.getFeed(member);
+                        Log.d("www", "loading onActivityResult");
                     }
                 }
 
@@ -139,6 +140,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void feedIsReady() {
+        this.displayModel.sortByTime();
         display();
     }
 

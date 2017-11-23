@@ -54,7 +54,7 @@ public class FilterActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String name = listViewItems.get(sparseBooleanArray.keyAt(position)).toLowerCase();
+                String name = listView.getItemAtPosition(position).toString().toLowerCase();
                 Member.toggleFilter(name);
             }
         });
@@ -72,5 +72,7 @@ public class FilterActivity extends AppCompatActivity {
         for (String member: Member.getMemberFilter()) {
             this.listView.setItemChecked(Member.getMember().indexOf(member), false);
         }
+
+        Member.clearFilter();
     }
 }

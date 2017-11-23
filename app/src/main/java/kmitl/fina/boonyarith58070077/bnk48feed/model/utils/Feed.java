@@ -2,7 +2,6 @@ package kmitl.fina.boonyarith58070077.bnk48feed.model.utils;
 
 import android.util.Log;
 
-import kmitl.fina.boonyarith58070077.bnk48feed.model.DisplayModel;
 import kmitl.fina.boonyarith58070077.bnk48feed.model.facebook.FacebookModel;
 import kmitl.fina.boonyarith58070077.bnk48feed.model.member.Member;
 
@@ -34,20 +33,14 @@ public class Feed implements Api.apiListener, Member.memberListener {
     @Override
     public void onFetchSuccess(String member_name, FacebookModel facebookModel) {
         Member member = new Member(this);
-        member.addAlreadyGotMember(member_name);
+        member.addAlreadyCallApiMember(member_name);
 
         this.feedListener.feedIsLoad(facebookModel);
-
-        Log.d("www", Member.getMemberFilter().toString());
-        Log.d("www", Member.getMemberAlreadyGetData().toString());
     }
 
     @Override
     public void onFetchFailed(String member_name) {
-        Member member = new Member(this);
-        member.addAlreadyGotMember(member_name);
-        Log.d("www", Member.getMemberFilter().toString());
-        Log.d("www", Member.getMemberAlreadyGetData().toString());
+
     }
 
     @Override
