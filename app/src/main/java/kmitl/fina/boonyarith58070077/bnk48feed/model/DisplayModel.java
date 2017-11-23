@@ -1,10 +1,12 @@
 package kmitl.fina.boonyarith58070077.bnk48feed.model;
 
 import android.annotation.SuppressLint;
+import android.media.FaceDetector;
 import android.util.Log;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -14,6 +16,7 @@ import java.util.TimeZone;
 import kmitl.fina.boonyarith58070077.bnk48feed.model.facebook.FacebookData;
 import kmitl.fina.boonyarith58070077.bnk48feed.model.facebook.FacebookModel;
 import kmitl.fina.boonyarith58070077.bnk48feed.model.facebook.FacebookProfile;
+import kmitl.fina.boonyarith58070077.bnk48feed.model.member.Member;
 
 public class DisplayModel {
 
@@ -22,6 +25,19 @@ public class DisplayModel {
     public DisplayModel() { }
 
     public List<FacebookData> getFacebookDataList() {
+        return facebookDataList;
+    }
+
+    public List<FacebookData> getFilteredFacebookDataList() {
+        List<FacebookData> facebookDataList = new ArrayList<FacebookData>();
+
+        for(FacebookData facebookData: this.facebookDataList) {
+            String name_system = facebookData.getFacebookProfile().getNameSystem();
+            if (Member.getMemberFilter().contains(name_system)) {
+                facebookDataList.add(facebookData);
+            }
+        }
+
         return facebookDataList;
     }
 
@@ -35,9 +51,8 @@ public class DisplayModel {
         facebookProfile.setAbout(facebookModel.getAbout());
         facebookProfile.setName(facebookModel.getName());
         facebookProfile.setPhotos(facebookModel.getPhotos());
+//        facebookProfile.setNameSystem(Member.getNameSystem(facebookModel.getId()));
 
-        Log.d("setFacebookDataList", facebookModel.getName());
-        Log.d("setFacebookDataList", facebookModel.getFacebookFeed().getPaging().getNext());
         for(FacebookData facebookData : facebookModel.getFacebookFeed().getData()) {
             facebookData.setFacebookProfile(facebookProfile);
         }

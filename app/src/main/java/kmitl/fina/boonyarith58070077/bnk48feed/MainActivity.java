@@ -1,9 +1,9 @@
 package kmitl.fina.boonyarith58070077.bnk48feed;
 
 import android.app.Activity;
-import android.app.Instrumentation;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -17,9 +17,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.wang.avi.AVLoadingIndicatorView;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import kmitl.fina.boonyarith58070077.bnk48feed.api.FacebookApi;
 import kmitl.fina.boonyarith58070077.bnk48feed.model.DisplayModel;
@@ -39,13 +36,13 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         AVLoadingIndicatorView avi = new AVLoadingIndicatorView(this);
         avi.show();
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -54,8 +51,8 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        member.clearMemberAlreadyGetData();
-        for (String member: Member.getMember()) {
+        Member.clearMemberAlreadyGetData();
+        for (String member: Member.getMemberFilter()) {
             getFeed(member);
         }
     }
@@ -95,13 +92,10 @@ public class MainActivity extends AppCompatActivity
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
 
         if (id == R.id.nav_camera) {
-            Member.clearMemberAlreadyGetData();
-            getFeed("cherprang", true);
         } else if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_slideshow) {
@@ -114,7 +108,7 @@ public class MainActivity extends AppCompatActivity
 
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -125,13 +119,8 @@ public class MainActivity extends AppCompatActivity
 
     private void getFeed(final String name, boolean clear) {
         // if `clear` is true then clear all data in FacebookDataList
-
-        Member.addMemberFilter(name);
         displayModel.clearData();
         callApi(name);
-
-        Log.d("www", Member.getMember().toString());
-        Log.d("www", Member.getMemberFilter().toString());
     }
 
     private void callApi(final String name) {
@@ -145,14 +134,14 @@ public class MainActivity extends AppCompatActivity
         FacebookApi api = retrofit.create(FacebookApi.class);
         api.getFeed(name).enqueue(new retrofit2.Callback<FacebookModel>() {
             @Override
-            public void onResponse(retrofit2.Call<FacebookModel> call, retrofit2.Response<FacebookModel> response) {
+            public void onResponse(@NonNull retrofit2.Call<FacebookModel> call, @NonNull retrofit2.Response<FacebookModel> response) {
                 Log.d("Response", "onResponse: " + name);
                 displayModel.setFacebookDataList(response.body());
                 member.addAlreadyGotMember(name);
             }
 
             @Override
-            public void onFailure(retrofit2.Call<FacebookModel> call, Throwable t) {
+            public void onFailure(@NonNull retrofit2.Call<FacebookModel> call, @NonNull Throwable t) {
                 Log.d("Response", "onFailure " + name);
                 member.addAlreadyGotMember(name);
             }
@@ -163,7 +152,7 @@ public class MainActivity extends AppCompatActivity
         RecyclerView list = findViewById(R.id.recyclerView);
         list.setLayoutManager(new LinearLayoutManager(this));
         PostAdapter adapter = new PostAdapter(this);
-        adapter.setData(this.displayModel.getFacebookDataList());
+        adapter.setData(this.displayModel.getFilteredFacebookDataList());
         list.setAdapter(adapter);
     }
 
@@ -175,19 +164,9 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d("www", requestCode + " " + resultCode + ' ' + Activity.RESULT_OK);
-
         if (requestCode == 1) {
-            if(resultCode == Activity.RESULT_OK){
-                Member.clearMemberAlreadyGetData();
-                List<String> members = new ArrayList<String>();
-
-                // Deep copy DIY style
-                members.addAll(Member.getMemberFilter());
-
-                for(String member: members) {
-                    getFeed(member, true);
-                }
+            if(resultCode == Activity.RESULT_OK){display();
+                display();
             }
         }
     }

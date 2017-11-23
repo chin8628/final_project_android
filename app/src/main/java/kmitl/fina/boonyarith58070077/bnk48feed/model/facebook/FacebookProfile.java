@@ -1,15 +1,12 @@
 package kmitl.fina.boonyarith58070077.bnk48feed.model.facebook;
 
-/**
- * Created by Boonyarith on 22/11/2560.
- */
-
 public class FacebookProfile {
 
     private String id;
     private String name;
     private String about;
     private Photos photos;
+    private String nameSystem;
 
     public String getId() {
         return id;
@@ -41,5 +38,13 @@ public class FacebookProfile {
 
     public void setPhotos(Photos photos) {
         this.photos = photos;
+    }
+
+    public String getNameSystem() {
+        return nameSystem;
+    }
+
+    public void setNameSystem(String nameSystem) {
+        this.nameSystem = nameSystem;
     }
 }
