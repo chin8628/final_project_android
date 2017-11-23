@@ -12,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -50,15 +51,11 @@ public class FilterActivity extends AppCompatActivity {
         }
 
         sparseBooleanArray = listView.getCheckedItemPositions();
-
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.d("www", sparseBooleanArray.get(position) + "");
-                Log.d("www", sparseBooleanArray.keyAt(position) + "");
                 String name = listViewItems.get(sparseBooleanArray.keyAt(position)).toLowerCase();
                 Member.toggleFilter(name);
-                Log.d("www", "filter after set>> " + Member.getMemberFilter().toString());
             }
         });
     }
@@ -68,5 +65,12 @@ public class FilterActivity extends AppCompatActivity {
         Intent returnIntent = new Intent();
         setResult(Activity.RESULT_OK, returnIntent);
         finish();
+    }
+
+    @OnClick(R.id.clear)
+    public void clear() {
+        for (String member: Member.getMemberFilter()) {
+            this.listView.setItemChecked(Member.getMember().indexOf(member), false);
+        }
     }
 }

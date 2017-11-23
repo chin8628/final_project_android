@@ -1,8 +1,6 @@
 package kmitl.fina.boonyarith58070077.bnk48feed.model;
 
 import android.annotation.SuppressLint;
-import android.media.FaceDetector;
-import android.util.Log;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -24,28 +22,32 @@ public class DisplayModel {
 
     public DisplayModel() { }
 
+    public DisplayModel(FacebookModel facebookModel) {
+        this.addFacebookDataList(facebookModel);
+    }
+
     public List<FacebookData> getFacebookDataList() {
         return facebookDataList;
     }
 
     public List<FacebookData> getFilteredFacebookDataList() {
-        List<FacebookData> facebookDataList = new ArrayList<FacebookData>();
+        List<FacebookData> newFacebookDataList = new ArrayList<>();
 
         for(FacebookData facebookData: this.facebookDataList) {
             String name_system = facebookData.getFacebookProfile().getNameSystem();
             if (Member.getMemberFilter().contains(name_system)) {
-                facebookDataList.add(facebookData);
+                newFacebookDataList.add(facebookData);
             }
         }
 
-        return facebookDataList;
+        return newFacebookDataList;
     }
 
     public void clearData() {
         this.facebookDataList = null;
     }
 
-    public void setFacebookDataList(FacebookModel facebookModel) {
+    public void addFacebookDataList(FacebookModel facebookModel) {
         FacebookProfile facebookProfile = new FacebookProfile();
         facebookProfile.setId(facebookModel.getId());
         facebookProfile.setAbout(facebookModel.getAbout());

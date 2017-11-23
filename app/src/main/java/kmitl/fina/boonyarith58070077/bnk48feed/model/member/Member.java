@@ -50,15 +50,9 @@ public class Member {
         facebookID.put("izutarina", "192097191312105");
     }
 
-    private static List<String> memberAlreadyGetData = new ArrayList<String>();
+    private static List<String> memberAlreadyGetData = new ArrayList<>();
     private static Set<String> memberFilter = new HashSet<>(Arrays.asList(member));
     private Member.memberListener memberListener;
-
-    public static void setMemberFilter(List<String> memberFilter) {
-        Set<String> filter = new HashSet<>();
-        filter.addAll(memberFilter);
-        Member.memberFilter = filter;
-    }
 
     public interface memberListener {
         void onAllMemberWasSearched();
@@ -74,25 +68,23 @@ public class Member {
 
     public void addAlreadyGotMember(String member) {
         Member.memberAlreadyGetData.add(member);
-        if (this.isAllMemberWasSearch()) {
+        if (Member.isAllMemberWasSearch()) {
             this.memberListener.onAllMemberWasSearched();
         }
     }
 
-    private boolean isAllMemberWasSearch() {
+    private static boolean isAllMemberWasSearch() {
         if (!Member.memberFilter.isEmpty()) {
             return Member.memberFilter.size() == Member.memberAlreadyGetData.size();
         }
         return Member.memberAlreadyGetData.size() == Member.member.length;
     }
 
-    public static void addMemberFilter(String name) {
-        if (!Member.getMemberFilter().contains(name)) {
-            Member.memberFilter.add(name);
-        }
+    public static void addFilter(String name) {
+        Member.memberFilter.add(name);
     }
 
-    public boolean isMemberFilterIsEmpty() {
+    public static boolean isMemberFilterIsEmpty() {
         return Member.memberFilter.isEmpty();
     }
 
@@ -120,10 +112,6 @@ public class Member {
         return "not found";
     }
 
-    public static void addFilter(String name) {
-        Member.memberFilter.add(name);
-    }
-
     public static void removeFilter(String name) {
         Member.memberFilter.remove(name);
     }
@@ -132,7 +120,17 @@ public class Member {
         if (Member.memberFilter.contains(name)) {
             Member.removeFilter(name);
         } else {
-            Member.addMemberFilter(name);
+            Member.addFilter(name);
+        }
+    }
+
+    public static List<String> getMemberAlreadyGetData() {
+        return memberAlreadyGetData;
+    }
+
+    public static void setMemberFilter(List<String> filter) {
+        for(String name: filter) {
+            Member.addFilter(name);
         }
     }
 }

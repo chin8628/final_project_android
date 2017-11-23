@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -18,19 +17,19 @@ import android.view.MenuItem;
 
 import com.wang.avi.AVLoadingIndicatorView;
 
-import kmitl.fina.boonyarith58070077.bnk48feed.api.FacebookApi;
+import java.util.List;
+
 import kmitl.fina.boonyarith58070077.bnk48feed.model.DisplayModel;
+import kmitl.fina.boonyarith58070077.bnk48feed.model.facebook.FacebookData;
 import kmitl.fina.boonyarith58070077.bnk48feed.model.facebook.FacebookModel;
 import kmitl.fina.boonyarith58070077.bnk48feed.model.member.Member;
-import okhttp3.OkHttpClient;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+import kmitl.fina.boonyarith58070077.bnk48feed.model.utils.Feed;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, Member.memberListener {
+        implements NavigationView.OnNavigationItemSelectedListener, Feed.feedListener {
 
-    private final DisplayModel displayModel = new DisplayModel();
-    private final Member member = new Member(this);
+    private DisplayModel displayModel = new DisplayModel();
+    private Feed feed = new Feed(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,18 +47,15 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        Member.clearMemberAlreadyGetData();
-        for (String member: Member.getMemberFilter()) {
-            getFeed(member);
-        }
+        this.feed.getAllFeed();
     }
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -113,42 +109,9 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private void getFeed(final String name) {
-        callApi(name);
-    }
-
-    private void getFeed(final String name, boolean clear) {
-        // if `clear` is true then clear all data in FacebookDataList
-        displayModel.clearData();
-        callApi(name);
-    }
-
-    private void callApi(final String name) {
-        OkHttpClient client = new OkHttpClient.Builder().build();
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(FacebookApi.BASE)
-                .client(client)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        FacebookApi api = retrofit.create(FacebookApi.class);
-        api.getFeed(name).enqueue(new retrofit2.Callback<FacebookModel>() {
-            @Override
-            public void onResponse(@NonNull retrofit2.Call<FacebookModel> call, @NonNull retrofit2.Response<FacebookModel> response) {
-                Log.d("Response", "onResponse: " + name);
-                displayModel.setFacebookDataList(response.body());
-                member.addAlreadyGotMember(name);
-            }
-
-            @Override
-            public void onFailure(@NonNull retrofit2.Call<FacebookModel> call, @NonNull Throwable t) {
-                Log.d("Response", "onFailure " + name);
-                member.addAlreadyGotMember(name);
-            }
-        });
-    }
-
     private void display() {
+        this.displayModel.sortByTime();
+
         RecyclerView list = findViewById(R.id.recyclerView);
         list.setLayoutManager(new LinearLayoutManager(this));
         PostAdapter adapter = new PostAdapter(this);
@@ -157,17 +120,30 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onAllMemberWasSearched() {
-        this.displayModel.sortByTime();
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if(resultCode == Activity.RESULT_OK){
+                List<String> member_filter = Member.getMemberFilter();
+
+                for (FacebookData facebookData: this.displayModel.getFacebookDataList()) {
+                    String name_system = facebookData.getFacebookProfile().getNameSystem();
+                    if (!member_filter.contains(name_system)) {
+                        this.feed.getFeed(name_system);
+                    }
+                }
+
+                display();
+            }
+        }
+    }
+
+    @Override
+    public void feedIsReady() {
         display();
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 1) {
-            if(resultCode == Activity.RESULT_OK){display();
-                display();
-            }
-        }
+    public void feedIsLoad(FacebookModel facebookModel) {
+        displayModel.addFacebookDataList(facebookModel);
     }
 }

@@ -40,7 +40,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
 
     public PostAdapter(Activity activity) {
         this.activity = activity;
-        facebookDataList = new ArrayList<FacebookData>();
+        facebookDataList = new ArrayList<>();
     }
 
     public void setData(List<FacebookData> facebookDataList) {
@@ -51,13 +51,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
     public Holder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.facebook_layout, parent, false);
 
-        Holder holder = new Holder(itemView);
-        return holder;
+        return new Holder(itemView);
     }
 
     @Override
-    public void onBindViewHolder(Holder holder, final int position) {
-        String type = facebookDataList.get(position).getAttachments().getData().get(0).getType();
+    public void onBindViewHolder(Holder holder, @SuppressLint("RecyclerView") final int position) {
+        String type = this.facebookDataList.get(position).getAttachments().getData().get(0).getType();
 
         if (facebookDataList.get(position).getAttachments() != null && type_filter.contains(type)) {
             String profileImageUrl = facebookDataList.get(position).getFacebookProfile().getPhotos().getData().get(0).getPicture();
