@@ -62,9 +62,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
             String profileImageUrl = facebookDataList.get(position).getFacebookProfile().getPhotos().getData().get(0).getPicture();
             String time_string = facebookDataList.get(position).getCreatedTime();
 
-            BannerSlider bannerSlider = holder.imageView;
             List<Banner> banners = new ArrayList<>();
-
             if (type_filter.indexOf(type) == 2) {
                 Subattachments subattachments = facebookDataList.get(position).getAttachments().getData().get(0).getSubattachments();
                 for(SubattachmentData subattachmentData: subattachments.getData()) {
@@ -75,8 +73,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
                 String image_url = facebookDataList.get(position).getAttachments().getData().get(0).getMedia().getImage().getSrc();
                 banners.add(new RemoteBanner(image_url));
             }
-
-            bannerSlider.setBanners(banners);
+            holder.imageView.setBanners(banners);
 
             holder.name.setText(facebookDataList.get(position).getFacebookProfile().getName());
             Glide.with(activity).load(profileImageUrl).into(holder.profileImage);
