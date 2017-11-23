@@ -26,8 +26,10 @@ import java.util.TimeZone;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import kmitl.fina.boonyarith58070077.bnk48feed.model.facebook.FacebookData;
+import kmitl.fina.boonyarith58070077.bnk48feed.model.facebook.FacebookSinglePost;
 import kmitl.fina.boonyarith58070077.bnk48feed.model.facebook.SubattachmentData;
 import kmitl.fina.boonyarith58070077.bnk48feed.model.facebook.Subattachments;
+import kmitl.fina.boonyarith58070077.bnk48feed.utils.DatabasePortal;
 import ss.com.bannerslider.banners.Banner;
 import ss.com.bannerslider.banners.RemoteBanner;
 import ss.com.bannerslider.views.BannerSlider;
@@ -36,9 +38,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
 
     private Activity activity;
     private List<FacebookData> facebookDataList;
-    private final List<String> type_filter = new ArrayList<String>(Arrays.asList("photo", "video_inline", "album"));
+    private final List<String> type_filter = new ArrayList<>(Arrays.asList("photo", "video_inline", "album"));
 
-    public PostAdapter(Activity activity) {
+    private PostAdapter(Activity activity) {
         this.activity = activity;
         facebookDataList = new ArrayList<>();
     }
@@ -47,13 +49,35 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
         this.facebookDataList = facebookDataList;
     }
 
+    private void setData(List<FacebookSinglePost> facebookSinglePosts, int flag) {
+        if (flag == 1) {
+            List<FacebookData> facebookDataList = new ArrayList<>();
+
+            for (FacebookSinglePost facebookSinglePost: facebookSinglePosts) {
+                FacebookData facebookData = new FacebookData();
+
+                facebookData.setFacebookProfile(facebookSinglePost.getFacebookProfile());
+                facebookData.setAttachments(facebookSinglePost.getAttachments());
+                facebookData.setCreatedTime(facebookSinglePost.getCreatedTime());
+                facebookData.setId(facebookSinglePost.getId());
+                facebookData.setPermalinkUrl(facebookSinglePost.getPermalinkUrl());
+                facebookData.setMessage(facebookSinglePost.getMessage());
+
+                facebookDataList.add(facebookData);
+            }
+
+            this.facebookDataList = facebookDataList;
+        }
+    }
+
     @Override
     public Holder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.facebook_layout, parent, false);
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.facebook_layout, parent, false);
 
         return new Holder(itemView);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(Holder holder, @SuppressLint("RecyclerView") final int position) {
         String type = this.facebookDataList.get(position).getAttachments().getData().get(0).getType();
@@ -78,6 +102,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
             holder.name.setText(facebookDataList.get(position).getFacebookProfile().getName());
             Glide.with(activity).load(profileImageUrl).into(holder.profileImage);
             holder.message.setText(facebookDataList.get(position).getMessage());
+//            holder.bookmark.setImageIcon(R.id);
 
             switch (type_filter.indexOf(type)) {
                 case 0:
@@ -118,6 +143,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
                     openOnBrowser(facebookDataList.get(position).getPermalinkUrl());
                 }
             });
+
+            holder.bookmark.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    new DatabasePortal().addBookmark(facebookDataList.get(position));
+                }
+            });
         }
     }
 
@@ -144,8 +176,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
         ImageButton browser;
         @BindView(R.id.tag_content)
         TextView tag;
+        @BindView(R.id.bookmarkBtn)
+        ImageButton bookmark;
 
-        public Holder(View itemView) {
+        private Holder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }

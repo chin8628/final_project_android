@@ -21,10 +21,10 @@ import com.wang.avi.AVLoadingIndicatorView;
 import java.util.List;
 
 import kmitl.fina.boonyarith58070077.bnk48feed.model.DisplayModel;
-import kmitl.fina.boonyarith58070077.bnk48feed.model.facebook.FacebookData;
 import kmitl.fina.boonyarith58070077.bnk48feed.model.facebook.FacebookModel;
+import kmitl.fina.boonyarith58070077.bnk48feed.model.facebook.FacebookSinglePost;
 import kmitl.fina.boonyarith58070077.bnk48feed.model.member.Member;
-import kmitl.fina.boonyarith58070077.bnk48feed.model.utils.Feed;
+import kmitl.fina.boonyarith58070077.bnk48feed.utils.Feed;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, Feed.feedListener {
@@ -92,17 +92,13 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+        if (id == R.id.feed) {
+            if (this.displayModel.isFacebookDataListEmpty()) {
+                this.feed.getAllFeed();
+            }
+            display(0);
+        } else if (id == R.id.bookmark) {
+            this.feed.getAllBookmark();
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -110,12 +106,20 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private void display() {
-        Log.d("www", "Display << " + this.displayModel.getFilteredFacebookDataList().toString());
+    private void display(int flag) {
+        // flag = 0; display new feed
+        // flag = 1; dispaly bookmark
+
         RecyclerView list = findViewById(R.id.recyclerView);
         list.setLayoutManager(new LinearLayoutManager(this));
         PostAdapter adapter = new PostAdapter(this);
-        adapter.setData(this.displayModel.getFilteredFacebookDataList());
+
+        if (flag == 0) {
+            adapter.setData(this.displayModel.getFilteredFacebookDataList());
+        } else if (flag == 1) {
+            adapter.setData(this.displayModel.getFacebookSinglePosts(), 1);
+        }
+
         list.setAdapter(adapter);
     }
 
@@ -129,11 +133,10 @@ public class MainActivity extends AppCompatActivity
                 for (String member: member_filter) {
                     if (!Member.getMemberAlreadyGetData().contains(member)) {
                         this.feed.getFeed(member);
-                        Log.d("www", "loading onActivityResult");
                     }
                 }
 
-                display();
+                display(0);
             }
         }
     }
@@ -141,11 +144,17 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void feedIsReady() {
         this.displayModel.sortByTime();
-        display();
+        display(0);
     }
 
     @Override
     public void feedIsLoad(FacebookModel facebookModel) {
         displayModel.addFacebookDataList(facebookModel);
+    }
+
+    @Override
+    public void feedIsLoad(FacebookSinglePost facebookSinglePost) {
+        displayModel.addFacebookDataList(facebookSinglePost);
+        display(1);
     }
 }

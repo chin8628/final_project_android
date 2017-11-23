@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -14,11 +15,13 @@ import java.util.TimeZone;
 import kmitl.fina.boonyarith58070077.bnk48feed.model.facebook.FacebookData;
 import kmitl.fina.boonyarith58070077.bnk48feed.model.facebook.FacebookModel;
 import kmitl.fina.boonyarith58070077.bnk48feed.model.facebook.FacebookProfile;
+import kmitl.fina.boonyarith58070077.bnk48feed.model.facebook.FacebookSinglePost;
 import kmitl.fina.boonyarith58070077.bnk48feed.model.member.Member;
 
 public class DisplayModel {
 
     private List<FacebookData> facebookDataList;
+    private List<FacebookSinglePost> facebookSinglePosts;
 
     public DisplayModel() { }
 
@@ -66,6 +69,15 @@ public class DisplayModel {
         }
     }
 
+    public void addFacebookDataList(FacebookSinglePost facebookSinglePost) {
+        if (this.facebookSinglePosts == null) {
+            this.facebookSinglePosts = new ArrayList<>();
+            this.facebookSinglePosts.add(facebookSinglePost);
+        } else {
+            this.facebookSinglePosts.add(facebookSinglePost);
+        }
+    }
+
     public void sortByTime() {
         Collections.sort(this.facebookDataList, new Comparator<FacebookData>() {
             @Override
@@ -93,5 +105,13 @@ public class DisplayModel {
                 return 0;
             }
         });
+    }
+
+    public List<FacebookSinglePost> getFacebookSinglePosts() {
+        return facebookSinglePosts;
+    }
+
+    public boolean isFacebookDataListEmpty() {
+        return this.facebookDataList.isEmpty();
     }
 }

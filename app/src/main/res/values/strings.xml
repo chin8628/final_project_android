@@ -11,4 +11,6 @@
     <string name="filter_activity_label">Filter</string>
     <string name="filter">Filter</string>
     <string name="clear">Clear</string>
+    <string name="feed">Feed</string>
+    <string name="bookmark">Bookmark</string>
 </resources>
