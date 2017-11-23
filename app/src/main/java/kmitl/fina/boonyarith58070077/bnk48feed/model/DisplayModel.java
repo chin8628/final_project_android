@@ -51,7 +51,7 @@ public class DisplayModel {
         facebookProfile.setAbout(facebookModel.getAbout());
         facebookProfile.setName(facebookModel.getName());
         facebookProfile.setPhotos(facebookModel.getPhotos());
-//        facebookProfile.setNameSystem(Member.getNameSystem(facebookModel.getId()));
+        facebookProfile.setNameSystem(Member.getNameSystem(facebookModel.getId()));
 
         for(FacebookData facebookData : facebookModel.getFacebookFeed().getData()) {
             facebookData.setFacebookProfile(facebookProfile);
