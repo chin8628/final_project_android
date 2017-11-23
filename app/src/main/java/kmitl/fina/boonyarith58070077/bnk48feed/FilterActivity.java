@@ -51,18 +51,13 @@ public class FilterActivity extends AppCompatActivity {
 
         sparseBooleanArray = listView.getCheckedItemPositions();
 
-        Member.clearFilter();
-        final List<String> filter_member = new ArrayList<String>();
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                for (int i=0; i<sparseBooleanArray.size(); i++) {
-                    if (sparseBooleanArray.valueAt(i)) {
-                        filter_member.add(listViewItems.get(sparseBooleanArray.keyAt(i)).toLowerCase());
-                    }
-                }
-                Log.d("www", "filter after add>> " + filter_member.toString());
-                Member.setMemberFilter(filter_member);
+                Log.d("www", sparseBooleanArray.get(position) + "");
+                Log.d("www", sparseBooleanArray.keyAt(position) + "");
+                String name = listViewItems.get(sparseBooleanArray.keyAt(position)).toLowerCase();
+                Member.toggleFilter(name);
                 Log.d("www", "filter after set>> " + Member.getMemberFilter().toString());
             }
         });

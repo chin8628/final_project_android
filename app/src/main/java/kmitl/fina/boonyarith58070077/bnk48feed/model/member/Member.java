@@ -1,8 +1,5 @@
 package kmitl.fina.boonyarith58070077.bnk48feed.model.member;
 
-import android.util.ArraySet;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -14,9 +11,9 @@ import java.util.Set;
 public class Member {
 
     private final static String[] member = {
-            "cherprang", "namhom", "tarwaan", "jennis", "jan", "pupe", "noey", "kate", "jane",
-            "nink", "maysa", "namneung", "miori", "jaa", "kaew", "can", "mind", "orn", "namsai",
-            "mobile", "music", "pun", "piam", "satchan", "jib", "korn", "kaimook", "izutarina"
+            "can", "cherprang", "izutarina", "jaa", "jan", "jane", "jennis", "jib", "kaew", "kaimook",
+            "kate", "korn", "maysa", "mind", "miori", "mobile", "music", "namhom", "namneung", "namsai",
+            "nink", "noey", "orn", "piam", "pun", "pupe", "satchan", "tarwaan"
     };
 
     // If I have more time, this properties should be migrate to server instead this
@@ -121,5 +118,21 @@ public class Member {
         }
 
         return "not found";
+    }
+
+    public static void addFilter(String name) {
+        Member.memberFilter.add(name);
+    }
+
+    public static void removeFilter(String name) {
+        Member.memberFilter.remove(name);
+    }
+
+    public static void toggleFilter(String name) {
+        if (Member.memberFilter.contains(name)) {
+            Member.removeFilter(name);
+        } else {
+            Member.addMemberFilter(name);
+        }
     }
 }
