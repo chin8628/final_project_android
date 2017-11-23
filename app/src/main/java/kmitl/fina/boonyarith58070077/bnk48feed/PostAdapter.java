@@ -40,7 +40,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
     private List<FacebookData> facebookDataList;
     private final List<String> type_filter = new ArrayList<>(Arrays.asList("photo", "video_inline", "album"));
 
-    private PostAdapter(Activity activity) {
+    public PostAdapter(Activity activity) {
         this.activity = activity;
         facebookDataList = new ArrayList<>();
     }
@@ -49,7 +49,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
         this.facebookDataList = facebookDataList;
     }
 
-    private void setData(List<FacebookSinglePost> facebookSinglePosts, int flag) {
+    public void setData(List<FacebookSinglePost> facebookSinglePosts, int flag) {
         if (flag == 1) {
             List<FacebookData> facebookDataList = new ArrayList<>();
 
