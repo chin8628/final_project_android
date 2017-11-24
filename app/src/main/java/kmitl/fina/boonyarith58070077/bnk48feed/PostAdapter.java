@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.like.LikeButton;
+import com.like.OnLikeListener;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -39,9 +42,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
     private Activity activity;
     private List<FacebookData> facebookDataList;
     private final List<String> type_filter = new ArrayList<>(Arrays.asList("photo", "video_inline", "album"));
+    private List<String> allBookmarkIdList = new ArrayList<>();
 
-    public PostAdapter(Activity activity) {
+    public PostAdapter(Activity activity, List<String> allBookmarkIdList) {
         this.activity = activity;
+        this.allBookmarkIdList = allBookmarkIdList;
         facebookDataList = new ArrayList<>();
     }
 
@@ -49,7 +54,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
         this.facebookDataList = facebookDataList;
     }
 
-    public void setData(List<FacebookSinglePost> facebookSinglePosts, int flag) {
+    void setData(List<FacebookSinglePost> facebookSinglePosts, int flag) {
         if (flag == 1) {
             List<FacebookData> facebookDataList = new ArrayList<>();
 
@@ -102,7 +107,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
             holder.name.setText(facebookDataList.get(position).getFacebookProfile().getName());
             Glide.with(activity).load(profileImageUrl).into(holder.profileImage);
             holder.message.setText(facebookDataList.get(position).getMessage());
-//            holder.bookmark.setImageIcon(R.id);
+
+            Log.d("www", "bookmarklist" + " " + this.allBookmarkIdList);
+
+            if (this.allBookmarkIdList.contains(facebookDataList.get(position).getId())) {
+                holder.bookmark.setLiked(true);
+            }
 
             switch (type_filter.indexOf(type)) {
                 case 0:
@@ -144,10 +154,16 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
                 }
             });
 
-            holder.bookmark.setOnClickListener(new View.OnClickListener() {
+            holder.bookmark.setOnLikeListener(new OnLikeListener() {
                 @Override
-                public void onClick(View view) {
+                public void liked(LikeButton likeButton) {
                     new DatabasePortal().addBookmark(facebookDataList.get(position));
+                }
+
+                @Override
+                public void unLiked(LikeButton likeButton) {
+//                    new DatabasePortal().addBookmark(facebookDataList.get(position));
+                    Log.d("www", "remove bookmark");
                 }
             });
         }
@@ -177,9 +193,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
         @BindView(R.id.tag_content)
         TextView tag;
         @BindView(R.id.bookmarkBtn)
-        ImageButton bookmark;
+        LikeButton bookmark;
 
-        private Holder(View itemView) {
+        public Holder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
@@ -198,5 +214,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
     private void openOnBrowser(String url) {
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         activity.startActivity(browserIntent);
+    }
+
+    public void setAllBookmarkIdList(List<String> allBookmarkIdList) {
+        this.allBookmarkIdList = allBookmarkIdList;
     }
 }

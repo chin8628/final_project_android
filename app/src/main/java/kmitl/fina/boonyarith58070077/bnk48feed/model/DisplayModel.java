@@ -5,7 +5,6 @@ import android.annotation.SuppressLint;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -20,8 +19,9 @@ import kmitl.fina.boonyarith58070077.bnk48feed.model.member.Member;
 
 public class DisplayModel {
 
-    private List<FacebookData> facebookDataList;
-    private List<FacebookSinglePost> facebookSinglePosts;
+    private List<FacebookData> facebookDataList = new ArrayList<>();
+    private List<FacebookSinglePost> facebookSinglePosts = new ArrayList<>();
+    private List<FacebookData> tempFacebookDataList = new ArrayList<>();
 
     public DisplayModel() { }
 
@@ -50,36 +50,44 @@ public class DisplayModel {
         this.facebookDataList = null;
     }
 
-    public void addFacebookDataList(FacebookModel facebookModel) {
+    public void addFacebookDataList(FacebookModel insertFacebookModel) {
         FacebookProfile facebookProfile = new FacebookProfile();
-        facebookProfile.setId(facebookModel.getId());
-        facebookProfile.setAbout(facebookModel.getAbout());
-        facebookProfile.setName(facebookModel.getName());
-        facebookProfile.setPhotos(facebookModel.getPhotos());
-        facebookProfile.setNameSystem(Member.getNameSystem(facebookModel.getId()));
+        facebookProfile.setId(insertFacebookModel.getId());
+        facebookProfile.setAbout(insertFacebookModel.getAbout());
+        facebookProfile.setName(insertFacebookModel.getName());
+        facebookProfile.setPhotos(insertFacebookModel.getPhotos());
+        facebookProfile.setNameSystem(Member.getNameSystem(insertFacebookModel.getId()));
 
-        for(FacebookData facebookData : facebookModel.getFacebookFeed().getData()) {
+        for(FacebookData facebookData : insertFacebookModel.getFacebookFeed().getData()) {
             facebookData.setFacebookProfile(facebookProfile);
         }
 
-        if (this.facebookDataList == null) {
-            this.facebookDataList = facebookModel.getFacebookFeed().getData();
-        } else {
-            this.facebookDataList.addAll(facebookModel.getFacebookFeed().getData());
-        }
+        this.tempFacebookDataList = sortByTime(insertFacebookModel.getFacebookFeed().getData());
     }
 
-    public void addFacebookDataList(FacebookSinglePost facebookSinglePost) {
+    public void addFacebookDataList(FacebookSinglePost insertFacebookSinglePost) {
+
         if (this.facebookSinglePosts == null) {
             this.facebookSinglePosts = new ArrayList<>();
-            this.facebookSinglePosts.add(facebookSinglePost);
-        } else {
-            this.facebookSinglePosts.add(facebookSinglePost);
         }
+
+        boolean itsDuplicate = false;
+        for (FacebookSinglePost facebookSinglePost: this.facebookSinglePosts) {
+            if (facebookSinglePost.getId().equals(insertFacebookSinglePost.getId())) {
+                itsDuplicate = true;
+                break;
+            }
+        }
+
+        if (!itsDuplicate) {
+            this.facebookSinglePosts.add(insertFacebookSinglePost);
+        }
+
+//        this.facebookSinglePosts = sortByTime(this.facebookSinglePosts, 1);
     }
 
-    public void sortByTime() {
-        Collections.sort(this.facebookDataList, new Comparator<FacebookData>() {
+    private List<FacebookData> sortByTime(List<FacebookData> facebookDataList) {
+        Collections.sort(facebookDataList, new Comparator<FacebookData>() {
             @Override
             public int compare(FacebookData facebookData1, FacebookData facebookData2) {
 
@@ -105,13 +113,69 @@ public class DisplayModel {
                 return 0;
             }
         });
+
+        return facebookDataList;
+    }
+
+    private List<FacebookSinglePost> sortByTime(List<FacebookSinglePost> facebookSinglePostList, int flag) {
+        Collections.sort(facebookSinglePostList, new Comparator<FacebookSinglePost>() {
+            @Override
+            public int compare(FacebookSinglePost facebookData1, FacebookSinglePost facebookData2) {
+
+                @SuppressLint("SimpleDateFormat")
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+                sdf.setTimeZone(TimeZone.getDefault());
+
+                Date time1 = new Date();
+                Date time2 = new Date();
+                try {
+                    time1 = sdf.parse(facebookData1.getCreatedTime());
+                    time2 = sdf.parse(facebookData2.getCreatedTime());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                long diff = time1.getTime() - time2.getTime();
+
+                if (diff > 0)
+                    return -1;
+                if (diff < 0)
+                    return 1;
+                return 0;
+            }
+        });
+
+        return facebookSinglePostList;
     }
 
     public List<FacebookSinglePost> getFacebookSinglePosts() {
-        return facebookSinglePosts;
+        List<FacebookSinglePost> facebookSinglePostList = new ArrayList<>();
+        facebookSinglePostList.addAll(this.facebookSinglePosts);
+        return facebookSinglePostList;
     }
 
     public boolean isFacebookDataListEmpty() {
         return this.facebookDataList.isEmpty();
+    }
+
+    public void addFacebookDataListIsDone() {
+        if (this.facebookDataList == null) {
+            this.facebookDataList = new ArrayList<>();
+        }
+
+        for (FacebookData facebookData1: this.tempFacebookDataList) {
+            boolean itsDuplicate = false;
+
+            for (FacebookData facebookData2: this.facebookDataList) {
+                if (facebookData1.getId().equals(facebookData2.getId())) {
+                    itsDuplicate = true;
+                    break;
+                }
+            }
+
+            if (!itsDuplicate) {
+                this.facebookDataList.add(facebookData1);
+            }
+        }
     }
 }

@@ -3,6 +3,7 @@ package kmitl.fina.boonyarith58070077.bnk48feed.utils;
 import android.annotation.SuppressLint;
 import android.arch.persistence.room.Room;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -36,24 +37,33 @@ public class DatabasePortal {
 
     @SuppressLint("StaticFieldLeak")
     public void addBookmark(FacebookData facebookData) {
-        final Bookmark bookmark = new Bookmark();
-        bookmark.setId_post(facebookData.getId());
-        bookmark.setType(facebookData.getAttachments().getData().get(0).getType());
+        final Bookmark insertBookmark = new Bookmark();
+        insertBookmark.setId_post(facebookData.getId());
+        insertBookmark.setType(facebookData.getAttachments().getData().get(0).getType());
 
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault());
         Date date = new Date();
-        bookmark.setDatetime(dateFormat.format(date));
+        insertBookmark.setDatetime(dateFormat.format(date));
 
         new AsyncTask<Void, Void, List<Bookmark>>() {
             @Override
             protected List<Bookmark> doInBackground(Void... voids) {
-                List<Bookmark> result = bookmarkDB.bookmarkDAO().allItem();
-                return result;
+                return bookmarkDB.bookmarkDAO().allItem();
             }
 
             @Override
-            protected void onPostExecute(List<Bookmark> bookmarks) {
-                bookmarkDB.bookmarkDAO().insert(bookmark);
+            protected void onPostExecute(List<Bookmark> bookmarkList) {
+                boolean willBeInsert = true;
+
+                for (Bookmark bookmark : bookmarkList) {
+                    if (bookmark.getId_post().equals(insertBookmark.getId_post())) {
+                        willBeInsert = false;
+                    }
+                }
+
+                if (willBeInsert) {
+                    bookmarkDB.bookmarkDAO().insert(insertBookmark);
+                }
             }
 
             @Override
@@ -67,8 +77,7 @@ public class DatabasePortal {
         new AsyncTask<Void, Void, List<Bookmark>>() {
             @Override
             protected List<Bookmark> doInBackground(Void... voids) {
-                List<Bookmark> result = bookmarkDB.bookmarkDAO().allItem();
-                return result;
+                return bookmarkDB.bookmarkDAO().allItem();
             }
 
             @Override

@@ -106,43 +106,57 @@
                 app:layout_constraintTop_toBottomOf="@id/imageView">
 
                 <ImageButton
-                    android:id="@+id/bookmarkBtn"
+                    android:id="@+id/browserBtn"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
-                    android:layout_marginEnd="16dp"
+                    android:layout_marginEnd="4dp"
+                    android:background="?android:selectableItemBackground"
+                    android:contentDescription="@string/content_description"
                     android:paddingLeft="8dp"
                     android:paddingRight="8dp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/shareBtn"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@mipmap/ic_bookmark_border_black_24dp"
-                    android:contentDescription="@string/content_description" />
+                    app:srcCompat="@mipmap/ic_open_in_browser_black_24dp" />
+
+                <!--<ImageButton-->
+                    <!--android:id="@+id/bookmarkBtn"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="0dp"-->
+                    <!--android:layout_marginEnd="16dp"-->
+                    <!--android:background="?android:selectableItemBackground"-->
+                    <!--android:contentDescription="@string/content_description"-->
+                    <!--android:paddingLeft="8dp"-->
+                    <!--android:paddingRight="8dp"-->
+                    <!--app:layout_constraintBottom_toBottomOf="parent"-->
+                    <!--app:layout_constraintEnd_toEndOf="parent"-->
+                    <!--app:layout_constraintTop_toTopOf="parent"-->
+                    <!--app:srcCompat="@mipmap/ic_bookmark_border_black_24dp" />-->
 
                 <ImageButton
                     android:id="@+id/shareBtn"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="0dp"
                     android:layout_marginEnd="4dp"
+                    android:background="?android:selectableItemBackground"
+                    android:contentDescription="@string/content_description"
                     android:paddingLeft="8dp"
                     android:paddingRight="8dp"
-                    android:contentDescription="@string/content_description"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/bookmarkBtn"
                     app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@drawable/ic_menu_share" />
 
-                <ImageButton
-                    android:id="@+id/browserBtn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="4dp"
-                    android:paddingLeft="8dp"
-                    android:paddingRight="8dp"
-                    android:contentDescription="@string/content_description"
+                <com.like.LikeButton
+                    android:id="@+id/bookmarkBtn"
+                    android:layout_width="30dp"
+                    android:layout_height="0dp"
+                    android:layout_marginEnd="8dp"
+                    app:icon_size="20dp"
+                    app:icon_type="star"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/shareBtn"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@mipmap/ic_open_in_browser_black_24dp" />
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/time"

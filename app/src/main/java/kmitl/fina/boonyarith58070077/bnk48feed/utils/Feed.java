@@ -12,18 +12,13 @@ public class Feed implements Api.apiListener, Member.memberListener, DatabasePor
 
     private Api api = new Api(this);
     private Feed.feedListener feedListener;
-
-    @Override
-    public void onGetBookmark(List<Bookmark> bookmarks) {
-        for (Bookmark bookmark: bookmarks) {
-            this.api.callSinglePostApi(bookmark.getId_post());
-        }
-    }
+    private List<String> bookmarkIdPostList = new ArrayList<>();
+    private boolean thisIsBookmarkPage = false;
 
     public interface feedListener {
         void feedIsReady();
-        void feedIsLoad(FacebookModel facebookModel);
-        void feedIsLoad(FacebookSinglePost facebookSinglePost);
+        void feedIsLoad(FacebookModel facebookModel, List<String> bookmarkIdPostList);
+        void feedIsLoad(FacebookSinglePost facebookSinglePost, List<String> bookmarkIdPostList);
     }
 
     public Feed(Feed.feedListener feedListener) {
@@ -35,6 +30,7 @@ public class Feed implements Api.apiListener, Member.memberListener, DatabasePor
     }
 
     public void getAllFeed() {
+        getAllBookmark();
         Member.clearMemberAlreadyGetData();
         for (String member: Member.getMemberFilter()) {
             getFeed(member);
@@ -42,8 +38,7 @@ public class Feed implements Api.apiListener, Member.memberListener, DatabasePor
     }
 
     public void getAllBookmark() {
-        DatabasePortal databasePortal = new DatabasePortal(this);
-        databasePortal.getAllBookmark();
+        new DatabasePortal(this).getAllBookmark();
     }
 
     @Override
@@ -51,12 +46,12 @@ public class Feed implements Api.apiListener, Member.memberListener, DatabasePor
         Member member = new Member(this);
         member.addAlreadyCallApiMember(member_name);
 
-        this.feedListener.feedIsLoad(facebookModel);
+        this.feedListener.feedIsLoad(facebookModel, bookmarkIdPostList);
     }
 
     @Override
     public void onFetchSuccess(String member_name, FacebookSinglePost facebookSinglePost) {
-        this.feedListener.feedIsLoad(facebookSinglePost);
+        this.feedListener.feedIsLoad(facebookSinglePost, bookmarkIdPostList);
     }
 
     @Override
@@ -65,7 +60,22 @@ public class Feed implements Api.apiListener, Member.memberListener, DatabasePor
     }
 
     @Override
+    public void onGetBookmark(List<Bookmark> bookmarks) {
+        for (Bookmark bookmark: bookmarks) {
+            this.bookmarkIdPostList.add(bookmark.getId_post());
+
+            if (thisIsBookmarkPage) {
+                this.api.callSinglePostApi(bookmark.getId_post());
+            }
+        }
+    }
+
+    @Override
     public void onAllMemberWasSearched() {
         this.feedListener.feedIsReady();
+    }
+
+    public void setThisIsBookmarkPage(boolean thisIsBookmarkPage) {
+        this.thisIsBookmarkPage = thisIsBookmarkPage;
     }
 }

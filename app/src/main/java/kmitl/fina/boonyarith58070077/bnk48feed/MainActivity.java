@@ -18,6 +18,7 @@ import android.view.MenuItem;
 
 import com.wang.avi.AVLoadingIndicatorView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import kmitl.fina.boonyarith58070077.bnk48feed.model.DisplayModel;
@@ -31,6 +32,8 @@ public class MainActivity extends AppCompatActivity
 
     private DisplayModel displayModel = new DisplayModel();
     private Feed feed = new Feed(this);
+    private List<String> allBookmarkIdList = new ArrayList<>();
+    private PostAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +54,7 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        display(0);
         this.feed.getAllFeed();
     }
 
@@ -73,9 +77,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
         if (id == R.id.action_settings) {
@@ -98,7 +99,9 @@ public class MainActivity extends AppCompatActivity
             }
             display(0);
         } else if (id == R.id.bookmark) {
+            this.feed.setThisIsBookmarkPage(true);
             this.feed.getAllBookmark();
+            display(1);
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -112,7 +115,7 @@ public class MainActivity extends AppCompatActivity
 
         RecyclerView list = findViewById(R.id.recyclerView);
         list.setLayoutManager(new LinearLayoutManager(this));
-        PostAdapter adapter = new PostAdapter(this);
+        this.adapter = new PostAdapter(this, this.allBookmarkIdList);
 
         if (flag == 0) {
             adapter.setData(this.displayModel.getFilteredFacebookDataList());
@@ -143,18 +146,26 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void feedIsReady() {
-        this.displayModel.sortByTime();
+        this.displayModel.addFacebookDataListIsDone();
+        this.adapter.setAllBookmarkIdList(this.allBookmarkIdList);
         display(0);
+//        this.adapter.notifyItemInserted(this.displayModel.getFacebookDataList().size() - 1);
     }
 
     @Override
-    public void feedIsLoad(FacebookModel facebookModel) {
-        displayModel.addFacebookDataList(facebookModel);
+    public void feedIsLoad(FacebookModel facebookModel, List<String> bookmarkIdPostList) {
+        this.displayModel.addFacebookDataList(facebookModel);
+        this.allBookmarkIdList = bookmarkIdPostList;
+        Log.d("www", "bookmarklist Mainactivity" + " " + bookmarkIdPostList);
+        this.adapter.setAllBookmarkIdList(bookmarkIdPostList);
     }
 
     @Override
-    public void feedIsLoad(FacebookSinglePost facebookSinglePost) {
+    public void feedIsLoad(FacebookSinglePost facebookSinglePost, List<String> bookmarkIdPostList) {
         displayModel.addFacebookDataList(facebookSinglePost);
+        this.allBookmarkIdList = bookmarkIdPostList;
+        this.adapter.setAllBookmarkIdList(bookmarkIdPostList);
         display(1);
+//        this.adapter.notifyItemInserted(this.displayModel.getFacebookSinglePosts().size() - 1);
     }
 }

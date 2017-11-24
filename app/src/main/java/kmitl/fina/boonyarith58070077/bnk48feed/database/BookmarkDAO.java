@@ -12,7 +12,7 @@ public interface BookmarkDAO {
     @Insert
     void insert(Bookmark money);
 
-    @Query("SELECT * FROM bookmark")
+    @Query("SELECT * FROM bookmark ORDER BY datetime DESC;")
     List<Bookmark> allItem();
 
     @Query("DELETE FROM bookmark WHERE id = :id")
