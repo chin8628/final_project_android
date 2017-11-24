@@ -108,8 +108,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
             Glide.with(activity).load(profileImageUrl).into(holder.profileImage);
             holder.message.setText(facebookDataList.get(position).getMessage());
 
-            Log.d("www", "bookmarklist" + " " + this.allBookmarkIdList);
-
             if (this.allBookmarkIdList.contains(facebookDataList.get(position).getId())) {
                 holder.bookmark.setLiked(true);
             }
@@ -162,8 +160,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
 
                 @Override
                 public void unLiked(LikeButton likeButton) {
-//                    new DatabasePortal().addBookmark(facebookDataList.get(position));
-                    Log.d("www", "remove bookmark");
+                    new DatabasePortal().removeBookmark(facebookDataList.get(position).getId());
+                    notifyDataSetChanged();
+                    allBookmarkIdList.remove(facebookDataList.get(position).getId());
                 }
             });
         }

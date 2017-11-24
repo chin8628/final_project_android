@@ -14,8 +14,8 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
-            android:screenOrientation="portrait"
             android:label="@string/title_activity_main"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -25,10 +25,12 @@
         </activity>
         <activity
             android:name=".FilterActivity"
-            android:screenOrientation="portrait"
-            android:label="@string/filter_activity_label" >
-
-        </activity>
+            android:label="@string/filter_activity_label"
+            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".BookmarkActivity"
+            android:label="@string/title_activity_bookmark"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

@@ -10,6 +10,7 @@ import kmitl.fina.boonyarith58070077.bnk48feed.model.member.Member;
 
 public class Feed implements Api.apiListener, Member.memberListener, DatabasePortal.bookmarkDBListener {
 
+    private int type;
     private Api api = new Api(this);
     private Feed.feedListener feedListener;
     private List<String> bookmarkIdPostList = new ArrayList<>();
@@ -21,7 +22,11 @@ public class Feed implements Api.apiListener, Member.memberListener, DatabasePor
         void feedIsLoad(FacebookSinglePost facebookSinglePost, List<String> bookmarkIdPostList);
     }
 
-    public Feed(Feed.feedListener feedListener) {
+    public Feed(Feed.feedListener feedListener, int type) {
+        // type 0 = new feed
+        // type 1 = bookmark feed
+
+        this.type = type;
         this.feedListener = feedListener;
     }
 

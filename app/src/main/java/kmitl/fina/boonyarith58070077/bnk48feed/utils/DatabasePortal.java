@@ -90,4 +90,23 @@ public class DatabasePortal {
             }
         }.execute();
     }
+
+    @SuppressLint("StaticFieldLeak")
+    public void removeBookmark(final String id_post) {
+        new AsyncTask<Void, Void, List<Bookmark>>() {
+            @Override
+            protected List<Bookmark> doInBackground(Void... voids) {
+                return bookmarkDB.bookmarkDAO().allItem();
+            }
+
+            @Override
+            protected void onPostExecute(List<Bookmark> bookmarks) {
+                bookmarkDB.bookmarkDAO().delete(id_post);
+            }
+
+            @Override
+            protected void onProgressUpdate(Void... values) {
+            }
+        }.execute();
+    }
 }

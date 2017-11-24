@@ -1,42 +1,49 @@
 package kmitl.fina.boonyarith58070077.bnk48feed;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import kmitl.fina.boonyarith58070077.bnk48feed.model.DisplayModel;
 import kmitl.fina.boonyarith58070077.bnk48feed.model.facebook.FacebookModel;
 import kmitl.fina.boonyarith58070077.bnk48feed.model.facebook.FacebookSinglePost;
-import kmitl.fina.boonyarith58070077.bnk48feed.model.member.Member;
 import kmitl.fina.boonyarith58070077.bnk48feed.utils.Feed;
 
-public class MainActivity extends AppCompatActivity
+public class BookmarkActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, Feed.feedListener {
 
     private DisplayModel displayModel = new DisplayModel();
-    private Feed feed = new Feed(this, 0);
+    private Feed feed = new Feed(this, 1);
     private List<String> allBookmarkIdList = new ArrayList<>();
-    private PostAdapter adapter;
+    private PostAdapter adapter = new PostAdapter(this, this.allBookmarkIdList);
+
+    @BindView(R.id.recyclerView)
+
+    RecyclerView list;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_bookmark);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -49,8 +56,11 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        display(0);
-        this.feed.getAllFeed();
+        ButterKnife.bind(this);
+
+        this.feed.setThisIsBookmarkPage(true);
+        this.feed.getAllBookmark();
+        display();
     }
 
     @Override
@@ -65,19 +75,15 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
+        return false;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        if (id == R.id.action_settings) {
-            Intent intent = new Intent(this, FilterActivity.class);
-            startActivityForResult(intent, 1);
-            return true;
-        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -88,13 +94,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.feed) {
-            if (this.displayModel.isFacebookDataListEmpty()) {
-                this.feed.getAllFeed();
-            }
-            display(0);
-        } else if (id == R.id.bookmark) {
-            Intent intent = new Intent(this, BookmarkActivity.class);
-            startActivity(intent);
+            finish();
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -102,51 +102,29 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private void display(int flag) {
-        RecyclerView list = findViewById(R.id.recyclerView);
-        list.setLayoutManager(new LinearLayoutManager(this));
-        this.adapter = new PostAdapter(this, this.allBookmarkIdList);
-        adapter.setData(this.displayModel.getFilteredFacebookDataList());
-        list.setAdapter(adapter);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 1) {
-            if(resultCode == Activity.RESULT_OK){
-                List<String> member_filter = Member.getMemberFilter();
-                Log.d("www", "loaded: " + Member.getMemberAlreadyGetData());
-
-                for (String member: member_filter) {
-                    if (!Member.getMemberAlreadyGetData().contains(member)) {
-                        this.feed.getFeed(member);
-                    }
-                }
-
-                display(0);
-            }
-        }
+    private void display() {
+        this.list.setLayoutManager(new LinearLayoutManager(this));
+        this.adapter.setData(this.displayModel.getFacebookSinglePosts(), 1);
+        this.list.setAdapter(adapter);
     }
 
     @Override
     public void feedIsReady() {
-        this.displayModel.addFacebookDataListIsDone();
-        this.adapter.setAllBookmarkIdList(this.allBookmarkIdList);
-        this.feed.setThisIsBookmarkPage(false);
-        this.feed.getAllBookmark();
-        display(0);
-//        this.adapter.notifyItemInserted(this.displayModel.getFacebookDataList().size() - 1);
+
     }
 
     @Override
     public void feedIsLoad(FacebookModel facebookModel, List<String> bookmarkIdPostList) {
-        this.displayModel.addFacebookDataList(facebookModel);
-        this.allBookmarkIdList = bookmarkIdPostList;
-        Log.d("www", "bookmarklist facebookmodel" + " " + bookmarkIdPostList);
-        this.adapter.setAllBookmarkIdList(bookmarkIdPostList);
+
     }
 
     @Override
     public void feedIsLoad(FacebookSinglePost facebookSinglePost, List<String> bookmarkIdPostList) {
+        displayModel.addFacebookDataList(facebookSinglePost);
+        this.allBookmarkIdList = bookmarkIdPostList;
+        this.adapter.setAllBookmarkIdList(bookmarkIdPostList);
+        this.displayModel.addFacebookDataList(facebookSinglePost);
+
+        display();
     }
 }

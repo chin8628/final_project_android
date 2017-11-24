@@ -15,6 +15,6 @@ public interface BookmarkDAO {
     @Query("SELECT * FROM bookmark ORDER BY datetime DESC;")
     List<Bookmark> allItem();
 
-    @Query("DELETE FROM bookmark WHERE id = :id")
-    int delete(int id);
+    @Query("DELETE FROM bookmark WHERE id_post = :id_post")
+    void delete(String id_post);
 }
