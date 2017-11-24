@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.design.widget.NavigationView;
@@ -34,9 +35,12 @@ public class MainActivity extends AppCompatActivity
     private Feed feed = new Feed(this, 0);
     private List<String> allBookmarkIdList = new ArrayList<>();
     private PostAdapter adapter = new PostAdapter(this, this.allBookmarkIdList);
+    private Boolean isLoading = false;
 
     @BindView(R.id.recyclerView)
     RecyclerView list;
+    @BindView(R.id.swipe)
+    SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +62,13 @@ public class MainActivity extends AppCompatActivity
 
         this.feed.getAllFeed();
         display();
+
+        this.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                onRefreshDone();
+            }
+        });
     }
 
     @Override
@@ -142,6 +153,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void feedIsReady() {
         this.displayModel.addFacebookDataListIsDone();
+        this.isLoading = true;
         display();
     }
 
@@ -157,4 +169,16 @@ public class MainActivity extends AppCompatActivity
         this.allBookmarkIdList = bookmarkIdPostList;
         this.adapter.setAllBookmarkIdList(bookmarkIdPostList);
     }
+
+    public void onRefreshDone() {
+        this.feed.getAllFeed();
+        display();
+
+        onItemsLoadComplete();
+    }
+
+    void onItemsLoadComplete() {
+        this.swipeRefreshLayout.setRefreshing(false);
+    }
+
 }

@@ -47,7 +47,7 @@ public class DisplayModel {
     }
 
     public void clearData() {
-        this.facebookDataList = null;
+        this.facebookDataList = new ArrayList<>();
     }
 
     public void addFacebookDataList(FacebookModel insertFacebookModel) {

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -40,6 +41,8 @@ public class BookmarkActivity extends AppCompatActivity
 
     @BindView(R.id.recyclerView)
     RecyclerView list;
+    @BindView(R.id.swipe)
+    SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +61,8 @@ public class BookmarkActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         ButterKnife.bind(this);
+
+        this.swipeRefreshLayout.setEnabled(false);
 
         this.feed.setThisIsBookmarkPage(true);
         this.feed.getAllBookmark();
