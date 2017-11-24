@@ -8,10 +8,21 @@
     android:fitsSystemWindows="true"
     tools:openDrawer="start">
 
-    <include
-    layout="@layout/loading_page"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" />
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/no_bookmark"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/no_bookmark_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No Bookmark"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </android.support.constraint.ConstraintLayout>
 
     <include
         layout="@layout/app_bar_main"
@@ -24,6 +35,8 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
-        app:menu="@menu/activity_main_drawer" />
+        app:menu="@menu/activity_main_drawer" >
+
+    </android.support.design.widget.NavigationView>
 
 </android.support.v4.widget.DrawerLayout>
