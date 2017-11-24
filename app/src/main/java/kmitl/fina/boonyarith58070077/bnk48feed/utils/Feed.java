@@ -1,5 +1,7 @@
 package kmitl.fina.boonyarith58070077.bnk48feed.utils;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +17,7 @@ public class Feed implements Api.apiListener, Member.memberListener, DatabasePor
     private Feed.feedListener feedListener;
     private List<String> bookmarkIdPostList = new ArrayList<>();
     private boolean thisIsBookmarkPage = false;
+    private int numberAlreadyFetchBookmark = 0;
 
     public interface feedListener {
         void feedIsReady();
@@ -57,6 +60,12 @@ public class Feed implements Api.apiListener, Member.memberListener, DatabasePor
     @Override
     public void onFetchSuccess(String member_name, FacebookSinglePost facebookSinglePost) {
         this.feedListener.feedIsLoad(facebookSinglePost, bookmarkIdPostList);
+        this.numberAlreadyFetchBookmark += 1;
+        if (this.numberAlreadyFetchBookmark == this.bookmarkIdPostList.size()) {
+            this.feedListener.feedIsReady();
+        }
+
+        Log.d("www", this.numberAlreadyFetchBookmark + " " + this.bookmarkIdPostList.size());
     }
 
     @Override
@@ -66,6 +75,8 @@ public class Feed implements Api.apiListener, Member.memberListener, DatabasePor
 
     @Override
     public void onGetBookmark(List<Bookmark> bookmarks) {
+        this.numberAlreadyFetchBookmark = 0;
+
         for (Bookmark bookmark: bookmarks) {
             this.bookmarkIdPostList.add(bookmark.getId_post());
 

@@ -1,5 +1,7 @@
 package kmitl.fina.boonyarith58070077.bnk48feed;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -37,7 +39,6 @@ public class BookmarkActivity extends AppCompatActivity
     private PostAdapter adapter = new PostAdapter(this, this.allBookmarkIdList);
 
     @BindView(R.id.recyclerView)
-
     RecyclerView list;
 
     @Override
@@ -94,6 +95,8 @@ public class BookmarkActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.feed) {
+            Intent returnIntent = new Intent();
+            setResult(Activity.RESULT_OK, returnIntent);
             finish();
         }
 

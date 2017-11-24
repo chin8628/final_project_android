@@ -19,6 +19,8 @@ import android.view.MenuItem;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import kmitl.fina.boonyarith58070077.bnk48feed.model.DisplayModel;
 import kmitl.fina.boonyarith58070077.bnk48feed.model.facebook.FacebookModel;
 import kmitl.fina.boonyarith58070077.bnk48feed.model.facebook.FacebookSinglePost;
@@ -31,7 +33,10 @@ public class MainActivity extends AppCompatActivity
     private DisplayModel displayModel = new DisplayModel();
     private Feed feed = new Feed(this, 0);
     private List<String> allBookmarkIdList = new ArrayList<>();
-    private PostAdapter adapter;
+    private PostAdapter adapter = new PostAdapter(this, this.allBookmarkIdList);
+
+    @BindView(R.id.recyclerView)
+    RecyclerView list;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,8 +54,10 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        display(0);
+        ButterKnife.bind(this);
+
         this.feed.getAllFeed();
+        display();
     }
 
     @Override
@@ -91,10 +98,10 @@ public class MainActivity extends AppCompatActivity
             if (this.displayModel.isFacebookDataListEmpty()) {
                 this.feed.getAllFeed();
             }
-            display(0);
+            display();
         } else if (id == R.id.bookmark) {
             Intent intent = new Intent(this, BookmarkActivity.class);
-            startActivity(intent);
+            startActivityForResult(intent, 2);
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -102,20 +109,19 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private void display(int flag) {
-        RecyclerView list = findViewById(R.id.recyclerView);
-        list.setLayoutManager(new LinearLayoutManager(this));
+    private void display() {
+        this.list.setLayoutManager(new LinearLayoutManager(this));
         this.adapter = new PostAdapter(this, this.allBookmarkIdList);
-        adapter.setData(this.displayModel.getFilteredFacebookDataList());
-        list.setAdapter(adapter);
+        this.adapter.setData(this.displayModel.getFilteredFacebookDataList());
+        this.list.setAdapter(adapter);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d("www", "requestCode >> " + requestCode + " " + resultCode + " " + Activity.RESULT_OK);
         if (requestCode == 1) {
             if(resultCode == Activity.RESULT_OK){
                 List<String> member_filter = Member.getMemberFilter();
-                Log.d("www", "loaded: " + Member.getMemberAlreadyGetData());
 
                 for (String member: member_filter) {
                     if (!Member.getMemberAlreadyGetData().contains(member)) {
@@ -123,7 +129,12 @@ public class MainActivity extends AppCompatActivity
                     }
                 }
 
-                display(0);
+                display();
+            }
+        } else if (requestCode == 2) {
+            if(resultCode == Activity.RESULT_OK){
+                this.feed.getAllBookmark();
+                display();
             }
         }
     }
@@ -131,22 +142,19 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void feedIsReady() {
         this.displayModel.addFacebookDataListIsDone();
-        this.adapter.setAllBookmarkIdList(this.allBookmarkIdList);
-        this.feed.setThisIsBookmarkPage(false);
-        this.feed.getAllBookmark();
-        display(0);
-//        this.adapter.notifyItemInserted(this.displayModel.getFacebookDataList().size() - 1);
+        display();
     }
 
     @Override
     public void feedIsLoad(FacebookModel facebookModel, List<String> bookmarkIdPostList) {
         this.displayModel.addFacebookDataList(facebookModel);
         this.allBookmarkIdList = bookmarkIdPostList;
-        Log.d("www", "bookmarklist facebookmodel" + " " + bookmarkIdPostList);
         this.adapter.setAllBookmarkIdList(bookmarkIdPostList);
     }
 
     @Override
     public void feedIsLoad(FacebookSinglePost facebookSinglePost, List<String> bookmarkIdPostList) {
+        this.allBookmarkIdList = bookmarkIdPostList;
+        this.adapter.setAllBookmarkIdList(bookmarkIdPostList);
     }
 }
