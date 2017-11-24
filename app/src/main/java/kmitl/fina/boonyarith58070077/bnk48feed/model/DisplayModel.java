@@ -62,7 +62,7 @@ public class DisplayModel {
             facebookData.setFacebookProfile(facebookProfile);
         }
 
-        this.tempFacebookDataList = sortByTime(insertFacebookModel.getFacebookFeed().getData());
+        this.tempFacebookDataList.addAll(insertFacebookModel.getFacebookFeed().getData());
     }
 
     public void addFacebookDataList(FacebookSinglePost insertFacebookSinglePost) {
@@ -83,7 +83,7 @@ public class DisplayModel {
             this.facebookSinglePosts.add(insertFacebookSinglePost);
         }
 
-//        this.facebookSinglePosts = sortByTime(this.facebookSinglePosts, 1);
+        this.facebookSinglePosts = sortByTime(this.facebookSinglePosts, 1);
     }
 
     private List<FacebookData> sortByTime(List<FacebookData> facebookDataList) {
@@ -159,6 +159,8 @@ public class DisplayModel {
     }
 
     public void addFacebookDataListIsDone() {
+        this.tempFacebookDataList = sortByTime(this.tempFacebookDataList);
+
         if (this.facebookDataList == null) {
             this.facebookDataList = new ArrayList<>();
         }
