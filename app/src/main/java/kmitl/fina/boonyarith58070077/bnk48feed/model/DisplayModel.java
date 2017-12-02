@@ -58,8 +58,13 @@ public class DisplayModel {
         facebookProfile.setPhotos(insertFacebookModel.getPhotos());
         facebookProfile.setNameSystem(Member.getNameSystem(insertFacebookModel.getId()));
 
-        for(FacebookData facebookData : insertFacebookModel.getFacebookFeed().getData()) {
-            facebookData.setFacebookProfile(facebookProfile);
+        List<FacebookData> data = insertFacebookModel.getFacebookFeed().getData();
+        for (int i=0; i<data.size(); i++) {
+            if (data.get(i).getAttachments() == null) {
+                data.remove(data.get(i));
+            }
+
+            data.get(i).setFacebookProfile(facebookProfile);
         }
 
         this.tempFacebookDataList.addAll(insertFacebookModel.getFacebookFeed().getData());

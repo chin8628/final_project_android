@@ -85,86 +85,88 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
     @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(Holder holder, @SuppressLint("RecyclerView") final int position) {
-        String type = this.facebookDataList.get(position).getAttachments().getData().get(0).getType();
+        if (facebookDataList.get(position).getAttachments() != null ) {
+            String type = this.facebookDataList.get(position).getAttachments().getData().get(0).getType();
 
-        if (facebookDataList.get(position).getAttachments() != null && type_filter.contains(type)) {
-            String profileImageUrl = facebookDataList.get(position).getFacebookProfile().getPhotos().getData().get(0).getPicture();
-            String time_string = facebookDataList.get(position).getCreatedTime();
+            if (type_filter.contains(type)) {
+                String profileImageUrl = facebookDataList.get(position).getFacebookProfile().getPhotos().getData().get(0).getPicture();
+                String time_string = facebookDataList.get(position).getCreatedTime();
 
-            List<Banner> banners = new ArrayList<>();
-            if (type_filter.indexOf(type) == 2) {
-                Subattachments subattachments = facebookDataList.get(position).getAttachments().getData().get(0).getSubattachments();
-                for(SubattachmentData subattachmentData: subattachments.getData()) {
-                    String image_url = subattachmentData.getMedia().getImage().getSrc();
+                List<Banner> banners = new ArrayList<>();
+                if (type_filter.indexOf(type) == 2) {
+                    Subattachments subattachments = facebookDataList.get(position).getAttachments().getData().get(0).getSubattachments();
+                    for (SubattachmentData subattachmentData : subattachments.getData()) {
+                        String image_url = subattachmentData.getMedia().getImage().getSrc();
+                        banners.add(new RemoteBanner(image_url));
+                    }
+                } else {
+                    String image_url = facebookDataList.get(position).getAttachments().getData().get(0).getMedia().getImage().getSrc();
                     banners.add(new RemoteBanner(image_url));
                 }
-            } else {
-                String image_url = facebookDataList.get(position).getAttachments().getData().get(0).getMedia().getImage().getSrc();
-                banners.add(new RemoteBanner(image_url));
-            }
-            holder.imageView.setBanners(banners);
+                holder.imageView.setBanners(banners);
 
-            holder.name.setText(facebookDataList.get(position).getFacebookProfile().getName());
-            Glide.with(activity).load(profileImageUrl).into(holder.profileImage);
-            holder.message.setText(facebookDataList.get(position).getMessage());
+                holder.name.setText(facebookDataList.get(position).getFacebookProfile().getName());
+                Glide.with(activity).load(profileImageUrl).into(holder.profileImage);
+                holder.message.setText(facebookDataList.get(position).getMessage());
 
-            if (this.allBookmarkIdList.contains(facebookDataList.get(position).getId())) {
-                holder.bookmark.setLiked(true);
-            }
-
-            switch (type_filter.indexOf(type)) {
-                case 0:
-                    holder.tag.setText("Photo");
-                    break;
-                case 1:
-                    holder.tag.setText("Video");
-                    break;
-                case 2:
-                    holder.tag.setText("Album");
-                    break;
-            }
-
-            @SuppressLint("SimpleDateFormat")
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
-            sdf.setTimeZone(TimeZone.getDefault());
-
-            Date time = new Date();
-            try {
-                time = sdf.parse(time_string);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-
-            String timeago = (String) DateUtils.getRelativeDateTimeString(BNK48Feed.getAppContext(), time.getTime(),5000, DateUtils.WEEK_IN_MILLIS,1);
-            holder.time.setText(timeago);
-
-            holder.share.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    shareUrl(facebookDataList.get(position).getPermalinkUrl());
-                }
-            });
-
-            holder.browser.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    openOnBrowser(facebookDataList.get(position).getPermalinkUrl());
-                }
-            });
-
-            holder.bookmark.setOnLikeListener(new OnLikeListener() {
-                @Override
-                public void liked(LikeButton likeButton) {
-                    new DatabasePortal().addBookmark(facebookDataList.get(position));
+                if (this.allBookmarkIdList.contains(facebookDataList.get(position).getId())) {
+                    holder.bookmark.setLiked(true);
                 }
 
-                @Override
-                public void unLiked(LikeButton likeButton) {
-                    new DatabasePortal().removeBookmark(facebookDataList.get(position).getId());
-                    notifyDataSetChanged();
-                    allBookmarkIdList.remove(facebookDataList.get(position).getId());
+                switch (type_filter.indexOf(type)) {
+                    case 0:
+                        holder.tag.setText("Photo");
+                        break;
+                    case 1:
+                        holder.tag.setText("Video");
+                        break;
+                    case 2:
+                        holder.tag.setText("Album");
+                        break;
                 }
-            });
+
+                @SuppressLint("SimpleDateFormat")
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+                sdf.setTimeZone(TimeZone.getDefault());
+
+                Date time = new Date();
+                try {
+                    time = sdf.parse(time_string);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                String timeago = (String) DateUtils.getRelativeDateTimeString(BNK48Feed.getAppContext(), time.getTime(), 5000, DateUtils.WEEK_IN_MILLIS, 1);
+                holder.time.setText(timeago);
+
+                holder.share.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        shareUrl(facebookDataList.get(position).getPermalinkUrl());
+                    }
+                });
+
+                holder.browser.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        openOnBrowser(facebookDataList.get(position).getPermalinkUrl());
+                    }
+                });
+
+                holder.bookmark.setOnLikeListener(new OnLikeListener() {
+                    @Override
+                    public void liked(LikeButton likeButton) {
+                        new DatabasePortal().addBookmark(facebookDataList.get(position));
+                    }
+
+                    @Override
+                    public void unLiked(LikeButton likeButton) {
+                        new DatabasePortal().removeBookmark(facebookDataList.get(position).getId());
+                        notifyDataSetChanged();
+                        allBookmarkIdList.remove(facebookDataList.get(position).getId());
+                    }
+                });
+            }
         }
     }
 
