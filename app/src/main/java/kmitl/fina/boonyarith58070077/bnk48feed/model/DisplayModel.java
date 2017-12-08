@@ -63,7 +63,9 @@ public class DisplayModel {
             if (data.get(i).getAttachments() == null) {
                 data.remove(data.get(i));
             }
+        }
 
+        for (int i=0; i<data.size(); i++) {
             data.get(i).setFacebookProfile(facebookProfile);
         }
 
